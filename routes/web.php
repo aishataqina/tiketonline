@@ -10,10 +10,7 @@ use App\Http\Controllers\Admin\TransactionController as AdminTransactionControll
 use Illuminate\Support\Facades\Route;
 use App\Models\Event;
 
-Route::get('/', function () {
-    $events = Event::where('status', 'active')->where('event_date', '>', now())->latest()->paginate(9);
-    return view('home', compact('events'));
-});
+Route::get('/', [EventController::class, 'index'])->name('events.index');
 
 Route::get('/dashboard', function () {
     return view('dashboard');

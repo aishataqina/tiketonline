@@ -3,14 +3,15 @@
 @section('content')
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center mb-6">
+                <a href="{{ route('events.index') }}"
+                    class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+                    Back to Events
+                </a>
+            </div>
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
-                    <div class="flex justify-between items-center mb-6">
-                        <a href="{{ route('events.index') }}"
-                            class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
-                            Back to Events
-                        </a>
-                    </div>
+
 
                     <div class="flex flex-col md:flex-row gap-8">
                         <div class="w-full md:w-4/12">
