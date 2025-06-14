@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="py-8">
-        <div class="max-w-6xl mx-auto sm:px-6 lg:px-8">
+        <div class="max-w-8xl mx-auto sm:px-6 lg:px-8">
             <div class="relative mb-6">
                 <div class="absolute left-0">
                     <a href="{{ route('admin.events.index') }}"

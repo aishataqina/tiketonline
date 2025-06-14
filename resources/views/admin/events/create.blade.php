@@ -1,14 +1,16 @@
 @extends('layouts.admin')
 
 @section('content')
+    <div class="mb-6">
+        <a href="{{ route('admin.events.index') }}"
+            class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+            Back to Events
+        </a>
+    </div>
     <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
         <div class="p-6 text-gray-900">
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-2xl font-semibold">Create Event</h2>
-                <a href="{{ route('admin.events.index') }}"
-                    class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
-                    Back to Events
-                </a>
             </div>
 
             <form action="{{ route('admin.events.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
