@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.user')
 
 @section('content')
     <div class="py-12">
@@ -6,25 +6,24 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
                     <div class="flex justify-between items-center mb-6">
-                        <h2 class="text-2xl font-semibold">{{ $event->title }}</h2>
                         <a href="{{ route('events.index') }}"
                             class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
                             Back to Events
                         </a>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        <div>
+                    <div class="flex flex-col md:flex-row gap-8">
+                        <div class="w-full md:w-4/12">
                             @if ($event->image)
                                 <img src="{{ asset('storage/' . $event->image) }}" alt="{{ $event->title }}"
-                                    class="w-full h-96 object-cover rounded-lg">
+                                    class="w-full h-full object-cover rounded-lg">
                             @endif
                         </div>
 
-                        <div>
+                        <div class="w-full md:w-8/12">
                             <div class="space-y-4">
                                 <div>
-                                    <h3 class="text-lg font-medium text-gray-900">Description</h3>
+                                    <h2 class="text-2xl font-semibold">{{ $event->title }}</h2>
                                     <p class="mt-2 text-gray-600">{{ $event->description }}</p>
                                 </div>
 
@@ -32,21 +31,33 @@
                                     <h3 class="text-lg font-medium text-gray-900">Event Details</h3>
                                     <dl class="mt-2 space-y-2">
                                         <div>
-                                            <dt class="text-sm font-medium text-gray-500">Date & Time</dt>
+                                            <div class="flex gap-2 items-center">
+                                                <i class="fa-solid fa-calendar-alt" style="color: #a0aaba;"></i>
+                                                <dt class="text-sm font-medium text-gray-500">Date & Time</dt>
+                                            </div>
                                             <dd class="mt-1 text-sm text-gray-900">
                                                 {{ $event->event_date->format('d M Y H:i') }}</dd>
                                         </div>
                                         <div>
-                                            <dt class="text-sm font-medium text-gray-500">Location</dt>
+                                            <div class="flex gap-2 items-center">
+                                                <i class="fa-solid fa-location-dot" style="color: #a0aaba;"></i>
+                                                <dt class="text-sm font-medium text-gray-500">Location</dt>
+                                            </div>
                                             <dd class="mt-1 text-sm text-gray-900">{{ $event->location }}</dd>
                                         </div>
                                         <div>
-                                            <dt class="text-sm font-medium text-gray-500">Available Tickets</dt>
+                                            <div class="flex gap-2 items-center">
+                                                <i class="fa-solid fa-ticket" style="color: #a0aaba;"></i>
+                                                <dt class="text-sm font-medium text-gray-500">Available Tickets</dt>
+                                            </div>
                                             <dd class="mt-1 text-sm text-gray-900">{{ $event->remaining_quota }} of
                                                 {{ $event->quota }}</dd>
                                         </div>
                                         <div>
-                                            <dt class="text-sm font-medium text-gray-500">Price</dt>
+                                            <div class="flex gap-2 items-center">
+                                                <i class="fa-solid fa-money-bill" style="color: #a0aaba;"></i>
+                                                <dt class="text-sm font-medium text-gray-500">Price</dt>
+                                            </div>
                                             <dd class="mt-1 text-lg font-bold text-blue-600">Rp
                                                 {{ number_format($event->price, 0, ',', '.') }}</dd>
                                         </div>

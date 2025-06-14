@@ -8,9 +8,11 @@ use App\Http\Controllers\Admin\EventController as AdminEventController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\TransactionController as AdminTransactionController;
 use Illuminate\Support\Facades\Route;
+use App\Models\Event;
 
 Route::get('/', function () {
-    return view('welcome');
+    $events = Event::where('status', 'active')->where('event_date', '>', now())->latest()->paginate(9);
+    return view('home', compact('events'));
 });
 
 Route::get('/dashboard', function () {

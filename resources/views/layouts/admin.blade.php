@@ -71,7 +71,8 @@
         <!-- Sidebar -->
         <div id="sidebar">
             <div class="p-3">
-                <h4 class="text-center sidebar-brand font-bold">JelajahEvent</h4>
+                <h4 class="text-center sidebar-brand font-bold"><i class="fa-solid fa-ticket me-1"></i></i> JelajahEvent
+                </h4>
                 <hr class="sidebar-divider">
                 <div class="nav-header">Menu Utama</div>
                 <div class="nav-header">Manajemen Event</div>

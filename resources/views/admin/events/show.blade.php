@@ -60,37 +60,41 @@
 
                                             <dd class="mt-1 text-sm text-gray-900">{{ $event->description }}</dd>
                                         </div>
-                                        <div class="flex gap-2 items-center">
-                                            <i class="fa-solid fa-money-bill me-1"></i>
-                                            <dt class="text-sm font-medium text-gray-500">Price:</dt>
-                                            <dd class="text-xl font-semibold text-gray-900">Rp
+                                        <div class="">
+                                            <div class="flex gap-1 items-center">
+                                                <i class="fa-solid fa-money-bill me-1" style="color: #a0aaba;"></i>
+                                                <dt class="text-sm font-medium text-gray-500">Price:</dt>
+                                            </div>
+                                            <dd class="text-xl font-semibold text-blue-500">Rp
                                                 {{ number_format($event->price, 0, ',', '.') }}</dd>
                                         </div>
-                                        <div class="flex gap-2 items-center">
-                                            <i class="fas fa-calendar-alt me-1"></i>
-                                            <dt class="text-sm font-medium text-gray-500">Date & Time:</dt>
+                                        <div class="">
+                                            <div class="flex gap-1 items-center">
+                                                <i class="fas fa-calendar-alt me-1" style="color: #a0aaba;"></i>
+                                                <dt class="text-sm font-medium text-gray-500">Date & Time:</dt>
+                                            </div>
                                             <dd class="text-sm text-gray-900">
                                                 {{ $event->event_date->format('d M Y H:i') }}</dd>
                                         </div>
-                                        <div class="flex gap-2 items-center">
-                                            <i class="fa-solid fa-location-dot me-1"></i>
-                                            <dt class="text-sm font-medium text-gray-500">Location:</dt>
+
+                                        <div class="">
+                                            <div class="flex gap-1 items-center">
+                                                <i class="fa-solid fa-location-dot me-1" style="color: #a0aaba;"></i>
+                                                <dt class="text-sm font-medium text-gray-500">Location:</dt>
+                                            </div>
                                             <dd class="text-sm text-gray-900">{{ $event->location }}</dd>
                                         </div>
 
-                                        <div class="flex gap-2 items-center">
+                                        <div class="">
                                             <dt class="text-sm font-medium text-gray-500">Quota:</dt>
                                             <dd class="text-sm text-gray-900">{{ $event->quota }} tickets</dd>
                                         </div>
-                                        <div class="flex gap-2 items-center">
+                                        <div class="">
                                             <dt class="text-sm font-medium text-gray-500">Remaining Quota:</dt>
                                             <dd class="text-sm text-gray-900">{{ $event->remaining_quota }} tickets
                                             </dd>
                                         </div>
                                         <div>
-
-
-                                        </div>
                                     </dl>
                                 </div>
                             </div>
