@@ -43,6 +43,10 @@
                                     href="{{ route('transactions.store') }}">Pembayaran</a>
                             </li>
                             <li>
+                                <a href="{{ route('cart.index') }}"
+                                    class="block py-2 px-4 text-gray-700 hover:text-blue-600 rounded hover:bg-gray-100 lg:hover:bg-transparent lg:p-0 font-medium">Keranjang</a>
+                            </li>
+                            <li>
                                 <form method="POST" action="{{ route('logout') }}" class="inline">
                                     @csrf
                                     <button type="submit"

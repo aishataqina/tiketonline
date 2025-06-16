@@ -65,25 +65,37 @@
                                     </dl>
                                 </div>
 
+                                <p class="mb-2"><strong>Sisa Kuota:</strong> {{ $event->remaining_quota }} dari
+                                    {{ $event->quota }}</p>
                                 @if ($event->status === 'active' && $event->remaining_quota > 0)
-                                    <form action="{{ route('orders.store') }}" method="POST" class="mt-6">
+                                    <form action="{{ route('cart.store') }}" method="POST"
+                                        class="mt-4 flex items-center gap-2">
                                         @csrf
                                         <input type="hidden" name="event_id" value="{{ $event->id }}">
-                                        <div class="mb-4">
-                                            <label for="quantity" class="block text-sm font-medium text-gray-700">Number of
-                                                Tickets</label>
-                                            <input type="number" name="quantity" id="quantity" min="1"
-                                                max="{{ $event->remaining_quota }}" value="1" required
-                                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                                            @error('quantity')
-                                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                            @enderror
-                                        </div>
+                                        <label for="quantity" class="mr-2">Jumlah:</label>
+                                        <input type="number" name="quantity" id="quantity" value="1" min="1"
+                                            max="{{ $event->remaining_quota }}" class="w-20 border rounded px-2 py-1">
                                         <button type="submit"
-                                            class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                                            Buy Tickets
+                                            class="bg-gray-200 text-gray-800 px-4 py-2 rounded hover:bg-gray-300">
+                                            Tambah ke Keranjang
                                         </button>
                                     </form>
+                                    <form action="{{ route('orders.store') }}" method="POST"
+                                        class="mt-2 flex items-center gap-2">
+                                        @csrf
+                                        <input type="hidden" name="event_id" value="{{ $event->id }}">
+                                        <input type="hidden" name="quantity" id="buy_quantity" value="1">
+                                        <button type="submit"
+                                            class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                                            Beli Tiket
+                                        </button>
+                                    </form>
+                                    <script>
+                                        // Sinkronkan jumlah di kedua form
+                                        document.getElementById('quantity').addEventListener('input', function() {
+                                            document.getElementById('buy_quantity').value = this.value;
+                                        });
+                                    </script>
                                 @else
                                     <div class="mt-6">
                                         <button disabled
