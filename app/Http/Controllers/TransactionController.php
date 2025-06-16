@@ -40,4 +40,15 @@ class TransactionController extends Controller
         return redirect()->route('orders.show', $order)
             ->with('success', 'Transaksi berhasil dibuat. Silakan lakukan pembayaran.');
     }
+
+    /**
+     * Display a listing of the user's transactions.
+     */
+    public function index()
+    {
+        $transactions = Transaction::whereHas('order', function ($q) {
+            $q->where('user_id', auth()->id());
+        })->with('order')->latest()->paginate(10);
+        return view('transactions.index', compact('transactions'));
+    }
 }

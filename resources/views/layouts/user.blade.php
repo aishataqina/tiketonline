@@ -4,83 +4,89 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Tiket Online') - {{ config('app.name') }}</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <!-- Fonts -->
+    <title>JelajahEvent</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
-
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
+        /* Custom font for Inter, if needed */
         body {
-            background: #f8fafc;
-        }
-
-        .navbar-brand {
-            font-weight: bold;
-        }
-
-        .main-content {
-            min-height: 80vh;
-        }
-
-        footer {
-            background: #fff;
-            border-top: 1px solid #eee;
+            font-family: 'Inter', sans-serif;
         }
     </style>
 </head>
 
-<body>
+<body class="bg-gray-100 antialiased min-h-screen flex flex-col">
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
-        <div class="container">
-            <a class="navbar-brand" href="{{ url('/') }}">
-                <i class="fa-solid fa-ticket me-1"></i></i> JelajahEvent
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link{{ request()->is('/') ? ' active' : '' }}"
-                            href="{{ url('/') }}">Beranda</a>
-                    </li>
-                    @auth
-                        <li class="nav-item">
-                            <a class="nav-link{{ request()->is('orders*') ? ' active' : '' }}"
-                                href="{{ route('orders.index') }}">Pesanan Saya</a>
-                        </li>
-                        <li class="nav-item">
-                            <form method="POST" action="{{ route('logout') }}">
-                                @csrf
-                                <button class="nav-link btn btn-link" type="submit">Logout</button>
-                            </form>
-                        </li>
-                    @else
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ route('login') }}">Login</a>
-                        </li>
-                    @endauth
-                </ul>
+    <nav class="bg-white shadow-md py-1">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <a class="flex items-center text-gray-800 font-extrabold text-xl" href="/">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+                        class="bi bi-ticket-perforated text-blue-600" viewBox="0 0 16 16">
+                        <path
+                            d="M0 4.5A1.5 1.5 0 0 1 1.5 3H14.5A1.5 1.5 0 0 1 16 4.5c0 .563-.186 1.07-.5 1.5.314.43.5.937.5 1.5s-.186 1.07-.5 1.5c.314.43.5.937.5 1.5A1.5 1.5 0 0 1 14.5 13H1.5A1.5 1.5 0 0 1 0 11.5c0-.563.186-1.07.5-1.5A2.5 2.5 0 0 1 0 8c0-.563.186-1.07.5-1.5A2.5 2.5 0 0 1 0 4.5zm1.5-.5A.5.5 0 0 0 1 4.5c0 .276.112.526.293.707A.5.5 0 0 1 1.5 6a.5.5 0 0 1-.207.793A.5.5 0 0 0 1 7.5c0 .276.112.526.293.707A.5.5 0 0 1 1.5 9a.5.5 0 0 1-.207.793A.5.5 0 0 0 1 10.5a.5.5 0 0 0 .5.5h13a.5.5 0 0 0 .5-.5c0-.276-.112-.526-.293-.707A.5.5 0 0 1 14.5 10a.5.5 0 0 1 .207-.793A.5.5 0 0 0 15 8.5a.5.5 0 0 0-.5-.5h-13a.5.5 0 0 0-.5.5c0 .276.112.526.293.707A.5.5 0 0 1 1.5 10a.5.5 0 0 1-.207.793A.5.5 0 0 0 1 11.5a.5.5 0 0 0 .5.5h13a.5.5 0 0 0 .5-.5c0-.276-.112-.526-.293-.707A.5.5 0 0 1 14.5 12a.5.5 0 0 1 .207-.793A.5.5 0 0 0 15 10.5a.5.5 0 0 0-.5-.5h-13a.5.5 0 0 0-.5.5z" />
+                    </svg>
+                    <span class="ml-2">JelajahEvent</span>
+                </a>
+                <div class="hidden lg:flex lg:items-center lg:w-auto" id="desktop-menu">
+                    <ul class="flex flex-col lg:flex-row lg:ml-auto gap-4">
+                        @auth
+                            <li>
+                                <a class="block py-2 px-4 text-gray-700 hover:text-blue-600 rounded hover:bg-gray-100 lg:hover:bg-transparent lg:p-0 font-medium {{ request()->is('orders*') ? 'text-blue-600' : '' }}"
+                                    href="{{ route('orders.index') }}">Pesanan Saya</a>
+                            </li>
+                            <li>
+                                <a class="block py-2 px-4 text-gray-700 hover:text-blue-600 rounded hover:bg-gray-100 lg:hover:bg-transparent lg:p-0 font-medium {{ request()->is('transactions*') ? 'text-blue-600' : '' }}"
+                                    href="{{ route('transactions.index') }}">Pembayaran</a>
+                            </li>
+                            <li>
+                                <form method="POST" action="{{ route('logout') }}" class="inline">
+                                    @csrf
+                                    <button type="submit"
+                                        class="block py-2 px-4 text-gray-700 hover:text-blue-600 rounded hover:bg-gray-100 lg:hover:bg-transparent lg:p-0 font-medium w-full text-left">Logout</button>
+                                </form>
+                            </li>
+                        @else
+                            <li>
+                                <a class="block py-2 px-4 text-gray-700 hover:text-blue-600 rounded hover:bg-gray-100 lg:hover:bg-transparent lg:p-0 font-medium {{ request()->is('login') ? 'text-blue-600' : '' }}"
+                                    href="{{ route('login') }}">Login</a>
+                            </li>
+                        @endauth
+                    </ul>
+                </div>
             </div>
         </div>
     </nav>
 
     <!-- Main Content -->
-    <div class="main-content py-4">
+    <div class="main-content py-4 flex-grow">
         @yield('content')
     </div>
 
     <!-- Footer -->
-    <footer class="py-3 text-center text-muted">
-        &copy; {{ date('Y') }} TiketOnline. All rights reserved.
+    <footer class="bg-white border-t border-gray-200 py-3 text-center text-gray-500 text-sm">
+        &copy; 2024 JelajahEvent. All rights reserved.
     </footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    @stack('scripts')
+    <script>
+        // JavaScript for mobile menu toggle
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+
+            mobileMenuButton.addEventListener('click', function() {
+                const isExpanded = this.getAttribute('aria-expanded') === 'true';
+                this.setAttribute('aria-expanded', !isExpanded);
+                mobileMenu.classList.toggle('hidden');
+                // Toggle between menu and close icons
+                this.querySelector('svg:first-child').classList.toggle('hidden'); // Menu icon
+                this.querySelector('svg:last-child').classList.toggle('hidden'); // X icon
+            });
+        });
+    </script>
 </body>
 
 </html>

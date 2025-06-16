@@ -1,7 +1,7 @@
 @extends('layouts.user')
 
 @section('content')
-    <div class="py-12">
+    <div class="py-10">
         <div class="max-w-7xl mx-auto">
             <div class="p-6 text-gray-900">
                 <h2 class="text-2xl font-semibold mb-6">Event & Tiket Tersedia</h2>
@@ -24,7 +24,7 @@
                         <p class="text-gray-500">No upcoming events available.</p>
                     </div>
                 @else
-                    <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
                         @foreach ($events as $event)
                             @include('components.event-card', ['event' => $event])
                         @endforeach

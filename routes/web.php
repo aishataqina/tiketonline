@@ -28,6 +28,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');
     Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
     Route::post('/transactions', [TransactionController::class, 'store'])->name('transactions.store');
+    Route::get('/transactions', [TransactionController::class, 'index'])->name('transactions.index');
 });
 
 // Admin Routes dengan middleware langsung
