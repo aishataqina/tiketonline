@@ -40,7 +40,7 @@
                             </li>
                             <li>
                                 <a class="block py-2 px-4 text-gray-700 hover:text-blue-600 rounded hover:bg-gray-100 lg:hover:bg-transparent lg:p-0 font-medium {{ request()->is('transactions*') ? 'text-blue-600' : '' }}"
-                                    href="{{ route('transactions.index') }}">Pembayaran</a>
+                                    href="{{ route('transactions.store') }}">Pembayaran</a>
                             </li>
                             <li>
                                 <form method="POST" action="{{ route('logout') }}" class="inline">

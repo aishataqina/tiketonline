@@ -6,6 +6,7 @@ use App\Models\Event;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class OrderController extends Controller
 {
@@ -14,7 +15,10 @@ class OrderController extends Controller
      */
     public function index()
     {
-        $orders = auth()->user()->orders()->with('event')->latest()->paginate(10);
+        if (Auth::user() && Auth::user()->is_admin) {
+            abort(403, 'Admin tidak boleh mengakses halaman user.');
+        }
+        $orders = Auth::user()->orders()->with('event')->latest()->paginate(10);
         return view('orders.index', compact('orders'));
     }
 
@@ -23,6 +27,9 @@ class OrderController extends Controller
      */
     public function store(Request $request)
     {
+        if (Auth::user() && Auth::user()->is_admin) {
+            abort(403, 'Admin tidak boleh melakukan order.');
+        }
         $request->validate([
             'event_id' => ['required', 'exists:events,id'],
             'quantity' => ['required', 'integer', 'min:1']
@@ -38,7 +45,7 @@ class OrderController extends Controller
             DB::beginTransaction();
 
             $order = Order::create([
-                'user_id' => auth()->id(),
+                'user_id' => Auth::id(),
                 'event_id' => $event->id,
                 'quantity' => $request->quantity,
                 'total_price' => $event->price * $request->quantity,
@@ -66,10 +73,12 @@ class OrderController extends Controller
      */
     public function show(Order $order)
     {
-        if ($order->user_id !== auth()->id()) {
+        if (Auth::user() && Auth::user()->is_admin) {
+            abort(403, 'Admin tidak boleh mengakses halaman user.');
+        }
+        if ($order->user_id !== Auth::id()) {
             abort(403);
         }
-
         $order->load(['event', 'transaction']);
         return view('orders.show', compact('order'));
     }
