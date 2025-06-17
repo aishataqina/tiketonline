@@ -11,15 +11,22 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('transactions', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('order_id')->constrained()->onDelete('cascade');
-            $table->string('transaction_code')->unique();
-            $table->decimal('amount', 10, 2);
-            $table->enum('payment_method', ['bank_transfer', 'credit_card', 'e_wallet']);
-            $table->enum('status', ['pending', 'success', 'failed'])->default('pending');
-            $table->timestamp('paid_at')->nullable();
-            $table->timestamps();
+        Schema::create(
+            'transactions',
+            function (Blueprint $table) {
+                $table->id();
+                $table->foreignId('user_id')->constrained()->onDelete('cascade');
+                $table->foreignId('event_id')->constrained()->onDelete('cascade');
+                $table->integer('quantity');
+                $table->decimal('amount', 10, 2);
+                $table->enum('status', ['pending', 'success', 'failed'])->default('pending');
+                $table->timestamp('paid_at')->nullable();
+                $table->timestamps();
+            }
+        );
+
+        Schema::table('transactions', function (Blueprint $table) {
+            $table->string('snap_token')->nullable()->after('status');
         });
     }
 
@@ -29,5 +36,9 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('transactions');
+
+        Schema::table('transactions', function (Blueprint $table) {
+            $table->dropColumn('snap_token');
+        });
     }
 };

@@ -23,7 +23,7 @@
                         </div>
                     @endif
 
-                    @if ($orders->isEmpty())
+                    @if ($transactions->isEmpty())
                         <div class="text-center py-8">
                             <p class="text-gray-500">Tidak ada transaksi menunggu pembayaran.</p>
                         </div>
@@ -34,7 +34,7 @@
                                     <tr>
                                         <th
                                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            No. Pesanan</th>
+                                            No. Transaksi</th>
                                         <th
                                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                             Event</th>
@@ -53,27 +53,24 @@
                                     </tr>
                                 </thead>
                                 <tbody class="bg-white divide-y divide-gray-200">
-                                    @foreach ($orders as $order)
+                                    @foreach ($transactions as $transaction)
                                         <tr>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                {{ $order->id }}</td>
+                                                {{ $transaction->id }}</td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                {{ $order->event->title ?? '-' }}</td>
+                                                {{ $transaction->event->title ?? '-' }}</td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                {{ $order->quantity }}</td>
+                                                {{ $transaction->quantity }}</td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Rp
-                                                {{ number_format($order->total_price, 0, ',', '.') }}</td>
+                                                {{ number_format($transaction->amount, 0, ',', '.') }}</td>
                                             <td class="px-6 py-4 whitespace-nowrap">
                                                 <span
-                                                    class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                                                    @if ($order->status === 'success') bg-green-100 text-green-800
-                                                    @elseif($order->status === 'pending') bg-yellow-100 text-yellow-800
-                                                    @elseif($order->status === 'failed') bg-red-100 text-red-800 @endif">
-                                                    {{ ucfirst($order->status) }}
+                                                    class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                                                    {{ ucfirst($transaction->status) }}
                                                 </span>
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                                <a href="{{ route('transactions.pay', $order) }}"
+                                                <a href="{{ route('transactions.pay', $transaction) }}"
                                                     class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">Bayar
                                                     Sekarang</a>
                                             </td>
@@ -83,7 +80,7 @@
                             </table>
                         </div>
                         <div class="mt-4">
-                            {{ $orders->links() }}
+                            {{ $transactions->links() }}
                         </div>
                     @endif
                 </div>

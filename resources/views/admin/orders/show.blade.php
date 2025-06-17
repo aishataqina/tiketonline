@@ -93,6 +93,8 @@
                 </dl>
             </div>
 
+            {{-- Hapus/komentari bagian berikut karena relasi transaction sudah tidak ada --}}
+            {{--
             @if ($order->transaction)
                 <div class="mt-8">
                     <h3 class="text-lg font-medium text-gray-900 mb-4">Payment Information</h3>
@@ -130,6 +132,7 @@
                     </dl>
                 </div>
             @endif
+            --}}
         </div>
     </div>
 @endsection

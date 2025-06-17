@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Cart;
 use App\Models\Event;
 use App\Models\Order;
+use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -45,22 +46,21 @@ class CartController extends Controller
         $cart->delete();
         return back()->with('success', 'Tiket dihapus dari keranjang.');
     }
-    public function checkout()
+    public function checkout(Request $request)
     {
         $carts = Cart::where('user_id', Auth::id())->with('event')->get();
         if ($carts->isEmpty()) {
             return back()->with('error', 'Keranjang kosong.');
         }
         $total = $carts->sum(fn($c) => $c->price * $c->quantity);
-        $order = Order::create([
+        $transaction = Transaction::create([
             'user_id' => Auth::id(),
             'event_id' => $carts->first()->event_id,
             'quantity' => $carts->sum('quantity'),
-            'total_price' => $total,
+            'amount' => $total,
             'status' => 'pending',
         ]);
-        // (Opsional) Buat detail order jika multi event
         Cart::where('user_id', Auth::id())->delete();
-        return redirect()->route('transactions.index')->with('success', 'Order berhasil dibuat, silakan lakukan pembayaran.');
+        return redirect()->route('transactions.index')->with('success', 'Transaksi berhasil dibuat, silakan lakukan pembayaran.');
     }
 }

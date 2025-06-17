@@ -48,13 +48,14 @@ class TransactionController extends Controller
     /**
      * Show the payment page for a specific order.
      */
-    public function pay(Order $order)
+    public function pay(Transaction $transaction)
     {
-        if ($order->user_id !== Auth::id()) {
+        $transaction->load('event');
+        if ($transaction->user_id !== Auth::id()) {
             abort(403);
         }
-        if (!in_array($order->status, ['pending', 'unpaid'])) {
-            return redirect()->route('orders.index')->with('error', 'Pesanan sudah dibayar atau tidak valid.');
+        if (!in_array($transaction->status, ['pending', 'unpaid'])) {
+            return redirect()->route('transactions.index')->with('error', 'Transaksi sudah dibayar atau tidak valid.');
         }
 
         // Midtrans config
@@ -63,12 +64,12 @@ class TransactionController extends Controller
         \Midtrans\Config::$isSanitized = true;
         \Midtrans\Config::$is3ds = true;
 
-        // Snap Token hanya digenerate sekali per order
-        if (empty($order->snap_token)) {
+        // Snap Token hanya digenerate sekali per transaksi
+        if (empty($transaction->snap_token)) {
             $params = [
                 'transaction_details' => [
-                    'order_id' => 'ORDER-' . $order->id . '-' . now()->timestamp,
-                    'gross_amount' => $order->total_price,
+                    'order_id' => 'ORDER-' . $transaction->id . '-' . now()->timestamp,
+                    'gross_amount' => $transaction->amount,
                 ],
                 'customer_details' => [
                     'first_name' => Auth::user()->name,
@@ -76,13 +77,13 @@ class TransactionController extends Controller
                 ],
             ];
             $snapToken = \Midtrans\Snap::getSnapToken($params);
-            $order->snap_token = $snapToken;
-            $order->save();
+            $transaction->snap_token = $snapToken;
+            $transaction->save();
         } else {
-            $snapToken = $order->snap_token;
+            $snapToken = $transaction->snap_token;
         }
 
-        return view('transactions.pay', compact('order', 'snapToken'));
+        return view('transactions.pay', compact('transaction', 'snapToken'));
     }
 
     /**
@@ -90,17 +91,17 @@ class TransactionController extends Controller
      */
     public function index()
     {
-        // Untuk menu Pembayaran
-        $orders = Auth::user()->orders()
-            ->whereIn('status', ['pending', 'unpaid'])
+        // Untuk menu Pembayaran: ambil transaksi pending
+        $transactions = Transaction::where('user_id', Auth::id())
+            ->where('status', 'pending')
             ->latest()
             ->paginate(10);
-
-        return view('transactions.index', compact('orders'));
+        return view('transactions.index', compact('transactions'));
     }
 
     public function midtransCallback(Request $request)
     {
+        dd($request->all());
         \Midtrans\Config::$serverKey = config('midtrans.server_key');
         \Midtrans\Config::$isProduction = config('midtrans.is_production');
         \Midtrans\Config::$isSanitized = true;
@@ -108,7 +109,6 @@ class TransactionController extends Controller
 
         $notif = new \Midtrans\Notification();
 
-        // Log untuk debugging
         \Log::info('Midtrans Callback:', [
             'order_id' => $notif->order_id,
             'transaction_status' => $notif->transaction_status,
@@ -117,38 +117,71 @@ class TransactionController extends Controller
             'gross_amount' => $notif->gross_amount
         ]);
 
-        $orderId = str_replace('ORDER-', '', $notif->order_id);
-        $order = \App\Models\Order::find($orderId);
+        preg_match('/ORDER-(\d+)/', $notif->order_id, $matches);
+        $transactionId = $matches[1] ?? null;
+        $transaction = Transaction::find($transactionId);
 
-        if (!$order) {
-            \Log::error('Order not found:', ['order_id' => $orderId]);
-            return response()->json(['message' => 'Order not found'], 404);
+        if (!$transaction) {
+            \Log::error('Transaction not found:', ['transaction_id' => $transactionId]);
+            return response()->json(['message' => 'Transaction not found'], 404);
         }
 
-        // Update status berdasarkan notifikasi
-        if ($notif->transaction_status == 'capture') {
-            if ($notif->payment_type == 'credit_card') {
-                if ($notif->fraud_status == 'challenge') {
-                    $order->status = 'challenge';
-                } else {
-                    $order->status = 'paid';
-                }
-            }
-        } else if ($notif->transaction_status == 'settlement') {
-            $order->status = 'paid';
-        } else if ($notif->transaction_status == 'pending') {
-            $order->status = 'pending';
-        } else if ($notif->transaction_status == 'deny') {
-            $order->status = 'denied';
-        } else if ($notif->transaction_status == 'expire') {
-            $order->status = 'expired';
-        } else if ($notif->transaction_status == 'cancel') {
-            $order->status = 'cancelled';
+        if ($notif->transaction_status == 'settlement' || $notif->transaction_status == 'capture') {
+            // Buat order baru dari transaksi
+            $order = Order::create([
+                'user_id' => $transaction->user_id,
+                'event_id' => $transaction->event_id,
+                'quantity' => $transaction->quantity,
+                'total_price' => $transaction->amount,
+                'status' => 'paid',
+            ]);
+            $transaction->status = 'success';
+            $transaction->paid_at = now();
+            $transaction->save();
+        } elseif ($notif->transaction_status == 'pending') {
+            $transaction->status = 'pending';
+            $transaction->save();
+        } elseif ($notif->transaction_status == 'deny') {
+            $transaction->status = 'denied';
+            $transaction->save();
+        } elseif ($notif->transaction_status == 'expire') {
+            $transaction->status = 'expired';
+            $transaction->save();
+        } elseif ($notif->transaction_status == 'cancel') {
+            $transaction->status = 'cancelled';
+            $transaction->save();
         }
 
-        $order->save();
-        \Log::info('Order updated:', ['order_id' => $order->id, 'new_status' => $order->status]);
-
+        \Log::info('Transaction updated:', ['transaction_id' => $transaction->id, 'new_status' => $transaction->status]);
         return response()->json(['success' => true]);
+    }
+
+    /**
+     * Create a new transaction from event_id and quantity, then redirect to payment page.
+     */
+    public function create(Request $request)
+    {
+        $request->validate([
+            'event_id' => 'required|exists:events,id',
+            'quantity' => 'required|integer|min:1',
+        ]);
+
+        $event = \App\Models\Event::findOrFail($request->event_id);
+        $user = Auth::user();
+
+        // Cek kuota
+        if ($event->remaining_quota < $request->quantity) {
+            return redirect()->back()->with('error', 'Sisa kuota tidak mencukupi.');
+        }
+
+        $transaction = Transaction::create([
+            'user_id' => $user->id,
+            'event_id' => $event->id,
+            'quantity' => $request->quantity,
+            'amount' => $event->price * $request->quantity,
+            'status' => 'pending',
+        ]);
+
+        return redirect()->route('transactions.pay', $transaction)->with('success', 'Transaksi berhasil dibuat, silakan lakukan pembayaran.');
     }
 }

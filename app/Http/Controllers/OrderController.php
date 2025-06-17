@@ -18,7 +18,10 @@ class OrderController extends Controller
         if (Auth::user() && Auth::user()->is_admin) {
             abort(403, 'Admin tidak boleh mengakses halaman user.');
         }
-        $orders = Auth::user()->orders()->whereIn('status', ['paid', 'completed'])->paginate(10);
+        $orders = Order::where('user_id', Auth::id())
+            // ->whereIn('status', ['paid', 'completed'])
+            ->latest()
+            ->paginate(10);
         return view('orders.index', compact('orders'));
     }
 
@@ -79,7 +82,7 @@ class OrderController extends Controller
         if ($order->user_id !== Auth::id()) {
             abort(403);
         }
-        $order->load(['event', 'transaction']);
+        $order->load(['event']);
         return view('orders.show', compact('order'));
     }
 }

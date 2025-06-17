@@ -10,11 +10,13 @@ class Transaction extends Model
     use HasFactory;
 
     protected $fillable = [
-        'order_id',
-        'transaction_code',
+        'user_id',
+        'event_id',
+        'quantity',
         'amount',
         'payment_method',
         'status',
+        'snap_token',
         'paid_at'
     ];
 
@@ -26,5 +28,10 @@ class Transaction extends Model
     public function order()
     {
         return $this->belongsTo(Order::class);
+    }
+
+    public function event()
+    {
+        return $this->belongsTo(Event::class);
     }
 }

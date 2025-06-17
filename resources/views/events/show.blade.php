@@ -80,9 +80,8 @@
                                             Tambah ke Keranjang
                                         </button>
                                     </form>
-                                    <form action="{{ route('orders.store') }}" method="POST"
+                                    <form action="{{ route('transactions.create') }}" method="GET"
                                         class="mt-2 flex items-center gap-2">
-                                        @csrf
                                         <input type="hidden" name="event_id" value="{{ $event->id }}">
                                         <input type="hidden" name="quantity" id="buy_quantity" value="1">
                                         <button type="submit"

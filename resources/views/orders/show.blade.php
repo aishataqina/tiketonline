@@ -79,7 +79,7 @@
                         </div>
                     </div>
 
-                    @if ($order->status === 'pending' && !$order->transaction)
+                    @if ($order->status === 'pending')
                         <div class="mt-8">
                             <h3 class="text-lg font-medium text-gray-900 mb-4">Payment Information</h3>
                             <div class="bg-gray-50 p-4 rounded-lg">
@@ -109,41 +109,10 @@
                         </div>
                     @endif
 
-                    @if ($order->transaction)
-                        <div class="mt-8">
-                            <h3 class="text-lg font-medium text-gray-900 mb-4">Transaction Information</h3>
-                            <dl class="space-y-4">
-                                <div>
-                                    <dt class="text-sm font-medium text-gray-500">Transaction Code</dt>
-                                    <dd class="mt-1 text-sm text-gray-900">{{ $order->transaction->transaction_code }}</dd>
-                                </div>
-                                <div>
-                                    <dt class="text-sm font-medium text-gray-500">Payment Method</dt>
-                                    <dd class="mt-1 text-sm text-gray-900">
-                                        {{ ucfirst(str_replace('_', ' ', $order->transaction->payment_method)) }}</dd>
-                                </div>
-                                <div>
-                                    <dt class="text-sm font-medium text-gray-500">Status</dt>
-                                    <dd class="mt-1">
-                                        <span
-                                            class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                                    @if ($order->transaction->status === 'pending') bg-yellow-100 text-yellow-800
-                                    @elseif($order->transaction->status === 'paid') bg-green-100 text-green-800
-                                    @elseif($order->transaction->status === 'failed') bg-red-100 text-red-800 @endif">
-                                            {{ ucfirst($order->transaction->status) }}
-                                        </span>
-                                    </dd>
-                                </div>
-                                @if ($order->transaction->paid_at)
-                                    <div>
-                                        <dt class="text-sm font-medium text-gray-500">Paid At</dt>
-                                        <dd class="mt-1 text-sm text-gray-900">
-                                            {{ $order->transaction->paid_at->format('d M Y H:i') }}</dd>
-                                    </div>
-                                @endif
-                            </dl>
-                        </div>
-                    @endif
+                    <div class="mt-8">
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">Order Information</h3>
+                        {{-- ... tampilkan detail order di sini ... --}}
+                    </div>
 
                     @if ($order->status === 'paid')
                         <div class="mt-8">
