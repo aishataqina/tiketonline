@@ -97,7 +97,10 @@
                             document.getElementById('pay-button').onclick = function() {
                                 window.snap.pay('{{ $snapToken }}', {
                                     onSuccess: function(result) {
-                                        window.location.href = "{{ route('transactions.index') }}?paid=1";
+                                        fetch('/transactions/' + {{ $transaction->id }} + '/confirm')
+                                            .then(() => {
+                                                window.location.href = "{{ route('transactions.index') }}?paid=1";
+                                            });
                                     },
                                     onPending: function(result) {
                                         alert('Transaksi belum selesai, silakan selesaikan pembayaran.');

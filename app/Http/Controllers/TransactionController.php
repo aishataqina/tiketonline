@@ -135,6 +135,14 @@ class TransactionController extends Controller
                 'total_price' => $transaction->amount,
                 'status' => 'paid',
             ]);
+            // Update sisa kuota event
+            $event = \App\Models\Event::find($transaction->event_id);
+            if ($event) {
+                $event->decrement('remaining_quota', $transaction->quantity);
+                if ($event->remaining_quota <= 0) {
+                    $event->update(['status' => 'sold_out']);
+                }
+            }
             $transaction->status = 'success';
             $transaction->paid_at = now();
             $transaction->save();
@@ -183,5 +191,51 @@ class TransactionController extends Controller
         ]);
 
         return redirect()->route('transactions.pay', $transaction)->with('success', 'Transaksi berhasil dibuat, silakan lakukan pembayaran.');
+    }
+
+    /**
+     * Konfirmasi pembayaran manual (tanpa callback), update status dan quota jika sudah settlement/capture.
+     */
+    public function confirmPayment($id)
+    {
+        $transaction = Transaction::findOrFail($id);
+        // Cek status ke Midtrans
+        \Midtrans\Config::$serverKey = config('midtrans.server_key');
+        \Midtrans\Config::$isProduction = config('midtrans.is_production');
+        \Midtrans\Config::$isSanitized = true;
+        \Midtrans\Config::$is3ds = true;
+        $status = \Midtrans\Transaction::status('ORDER-' . $transaction->id);
+        if ($status->transaction_status == 'settlement' || $status->transaction_status == 'capture') {
+            if ($transaction->status !== 'success') {
+                $transaction->status = 'success';
+                $transaction->paid_at = now();
+                $transaction->save();
+                $event = \App\Models\Event::find($transaction->event_id);
+                if ($event) {
+                    $event->decrement('remaining_quota', $transaction->quantity);
+                    if ($event->remaining_quota <= 0) {
+                        $event->update(['status' => 'sold_out']);
+                    }
+                }
+                // Buat order baru dari transaksi jika belum ada order untuk user, event, dan quantity yang sama
+                $existingOrder = \App\Models\Order::where('user_id', $transaction->user_id)
+                    ->where('event_id', $transaction->event_id)
+                    ->where('quantity', $transaction->quantity)
+                    ->where('total_price', $transaction->amount)
+                    ->where('status', 'paid')
+                    ->first();
+                if (!$existingOrder) {
+                    \App\Models\Order::create([
+                        'user_id' => $transaction->user_id,
+                        'event_id' => $transaction->event_id,
+                        'quantity' => $transaction->quantity,
+                        'total_price' => $transaction->amount,
+                        'status' => 'paid',
+                    ]);
+                }
+            }
+            return response()->json(['success' => true]);
+        }
+        return response()->json(['success' => false]);
     }
 }

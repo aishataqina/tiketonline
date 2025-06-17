@@ -97,6 +97,11 @@ class EventController extends Controller
             $data['image'] = $request->file('image')->store('events', 'public');
         }
 
+        // Jika quota berubah, reset remaining_quota
+        if ($event->quota != $data['quota']) {
+            $data['remaining_quota'] = $data['quota'];
+        }
+
         $event->update($data);
 
         return redirect()->route('admin.events.index')
