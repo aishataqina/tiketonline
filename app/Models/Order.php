@@ -14,7 +14,8 @@ class Order extends Model
         'event_id',
         'quantity',
         'total_price',
-        'status'
+        'status',
+        'snap_token'
     ];
 
     protected $casts = [

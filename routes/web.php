@@ -30,6 +30,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
     Route::post('/transactions', [TransactionController::class, 'store'])->name('transactions.store');
     Route::get('/transactions', [TransactionController::class, 'index'])->name('transactions.index');
+    Route::get('/transactions/{order}/pay', [TransactionController::class, 'pay'])->name('transactions.pay');
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
     Route::post('/cart', [CartController::class, 'store'])->name('cart.store');
     Route::patch('/cart/{cart}', [CartController::class, 'update'])->name('cart.update');
@@ -46,5 +47,8 @@ Route::middleware(['web', 'auth', \App\Http\Middleware\AdminMiddleware::class])
         Route::resource('orders', AdminOrderController::class);
         Route::resource('transactions', AdminTransactionController::class);
     });
+
+// Midtrans Callback Route - harus di luar middleware auth
+Route::post('/midtrans/callback', [TransactionController::class, 'midtransCallback'])->name('midtrans.callback');
 
 require __DIR__ . '/auth.php';

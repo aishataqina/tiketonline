@@ -18,7 +18,7 @@ class OrderController extends Controller
         if (Auth::user() && Auth::user()->is_admin) {
             abort(403, 'Admin tidak boleh mengakses halaman user.');
         }
-        $orders = Auth::user()->orders()->with('event')->latest()->paginate(10);
+        $orders = Auth::user()->orders()->whereIn('status', ['paid', 'completed'])->paginate(10);
         return view('orders.index', compact('orders'));
     }
 
