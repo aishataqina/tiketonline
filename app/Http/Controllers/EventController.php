@@ -15,7 +15,7 @@ class EventController extends Controller
         $events = Event::where('status', 'active')
             ->where('event_date', '>', now())
             ->latest()
-            ->paginate(9);
+            ->paginate(10);
 
         return view('events.index', compact('events'));
     }

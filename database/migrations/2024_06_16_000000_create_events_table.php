@@ -21,7 +21,7 @@ return new class extends Migration
             $table->decimal('price', 10, 2);
             $table->integer('quota');
             $table->integer('remaining_quota');
-            $table->enum('status', ['active', 'inactive', 'sold_out'])->default('active');
+            $table->enum('status', ['draft', 'active', 'cancelled', 'sold_out', 'finished'])->default('draft');
             $table->timestamps();
         });
     }

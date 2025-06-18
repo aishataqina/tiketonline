@@ -23,7 +23,7 @@
 
                     @if ($orders->isEmpty())
                         <div class="text-center py-8">
-                            <p class="text-gray-500">You haven't made any orders yet.</p>
+                            <p class="text-gray-700">You haven't made any orders yet.</p>
                             <a href="{{ route('events.index') }}"
                                 class="mt-4 inline-block bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                                 Browse Events
@@ -35,23 +35,23 @@
                                 <thead class="bg-gray-50">
                                     <tr>
                                         <th scope="col"
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Order ID</th>
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
+                                            ID Pesanan</th>
                                         <th scope="col"
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
                                             Event</th>
                                         <th scope="col"
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Quantity</th>
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
+                                            Jumlah Tiket</th>
                                         <th scope="col"
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Total Price</th>
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
+                                            Total Harga</th>
                                         <th scope="col"
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
                                             Status</th>
                                         <th scope="col"
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Actions</th>
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
+                                            Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody class="bg-white divide-y divide-gray-200">
@@ -76,7 +76,7 @@
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                                 <a href="{{ route('orders.show', $order) }}"
-                                                    class="text-blue-600 hover:text-blue-900">View Details</a>
+                                                    class="text-blue-600 hover:text-blue-900">Lihat Detail</a>
                                             </td>
                                         </tr>
                                     @endforeach

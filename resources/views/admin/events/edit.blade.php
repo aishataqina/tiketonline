@@ -4,7 +4,7 @@
     <div class="mb-6">
         <a href="{{ route('admin.events.index') }}"
             class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
-            Back to Events
+            Kembali ke Daftar Event
         </a>
     </div>
     <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
@@ -20,7 +20,7 @@
                 @method('PUT')
 
                 <div>
-                    <label for="title" class="block text-sm font-medium text-gray-700">Title</label>
+                    <label for="title" class="block text-sm font-medium text-gray-700">Nama Event</label>
                     <input type="text" name="title" id="title" value="{{ old('title', $event->title) }}" required
                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                     @error('title')
@@ -29,7 +29,7 @@
                 </div>
 
                 <div>
-                    <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
+                    <label for="description" class="block text-sm font-medium text-gray-700">Deskripsi</label>
                     <textarea name="description" id="description" rows="3" required
                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">{{ old('description', $event->description) }}</textarea>
                     @error('description')
@@ -38,7 +38,7 @@
                 </div>
 
                 <div>
-                    <label for="image" class="block text-sm font-medium text-gray-700">Image</label>
+                    <label for="image" class="block text-sm font-medium text-gray-700">Gambar</label>
                     @if ($event->image)
                         <div class="mt-2">
                             <img src="{{ asset('storage/' . $event->image) }}" alt="{{ $event->title }}"
@@ -52,7 +52,7 @@
                 </div>
 
                 <div>
-                    <label for="event_date" class="block text-sm font-medium text-gray-700">Event Date</label>
+                    <label for="event_date" class="block text-sm font-medium text-gray-700">Tanggal & Waktu</label>
                     <input type="datetime-local" name="event_date" id="event_date"
                         value="{{ old('event_date', $event->event_date->format('Y-m-d\TH:i')) }}" required
                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
@@ -62,7 +62,7 @@
                 </div>
 
                 <div>
-                    <label for="location" class="block text-sm font-medium text-gray-700">Location</label>
+                    <label for="location" class="block text-sm font-medium text-gray-700">Lokasi</label>
                     <input type="text" name="location" id="location" value="{{ old('location', $event->location) }}"
                         required
                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
@@ -72,7 +72,7 @@
                 </div>
 
                 <div>
-                    <label for="price" class="block text-sm font-medium text-gray-700">Price</label>
+                    <label for="price" class="block text-sm font-medium text-gray-700">Harga</label>
                     <input type="number" name="price" id="price" value="{{ old('price', $event->price) }}" required
                         min="0"
                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
@@ -82,7 +82,7 @@
                 </div>
 
                 <div>
-                    <label for="quota" class="block text-sm font-medium text-gray-700">Quota</label>
+                    <label for="quota" class="block text-sm font-medium text-gray-700">Kuota</label>
                     <input type="number" name="quota" id="quota" value="{{ old('quota', $event->quota) }}" required
                         min="1"
                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
@@ -95,7 +95,7 @@
                     <label for="status" class="block text-sm font-medium text-gray-700">Status</label>
                     <select name="status" id="status" required
                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                        <option value="active" {{ old('status', $event->status) === 'active' ? 'selected' : '' }}>Active
+                        <option value="active" {{ old('status', $event->status) === 'active' ? 'selected' : '' }}>Aktif
                         </option>
                         <option value="inactive" {{ old('status', $event->status) === 'inactive' ? 'selected' : '' }}>
                             Inactive</option>

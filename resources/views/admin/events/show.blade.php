@@ -7,7 +7,7 @@
                 <div class="absolute left-0">
                     <a href="{{ route('admin.events.index') }}"
                         class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
-                        Back to Events
+                        Kembali ke Daftar Event
                     </a>
                 </div>
                 <h2 class="text-2xl font-semibold text-center">Event Details</h2>
@@ -41,7 +41,7 @@
                         <div class="w-9/12">
                             <div class="space-y-4">
                                 <div>
-                                    <h3 class="text-lg font-medium text-gray-900">Event Information</h3>
+                                    <h3 class="text-lg font-medium text-gray-900">Informasi Event</h3>
                                     <dl class="mt-2 space-y-2">
                                         <div>
                                             <div class="flex gap-2 items-center ">
@@ -52,7 +52,7 @@
                                                         class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
                                                 @if ($event->status === 'active') bg-green-100 text-green-800
                                                 @elseif($event->status === 'sold_out') bg-red-100 text-red-800
-                                                @elseif($event->status === 'cancelled') bg-gray-100 text-gray-800 @endif">
+                                                @elseif($event->status === 'cancelled') bg-gray-100 text-gray-700 @endif">
                                                         {{ ucfirst($event->status) }}
                                                     </span>
                                                 </dd>
@@ -63,7 +63,7 @@
                                         <div class="">
                                             <div class="flex gap-1 items-center">
                                                 <i class="fa-solid fa-money-bill me-1" style="color: #a0aaba;"></i>
-                                                <dt class="text-sm font-medium text-gray-500">Price:</dt>
+                                                <dt class="text-sm font-medium text-gray-700">Price:</dt>
                                             </div>
                                             <dd class="text-xl font-semibold text-blue-500">Rp
                                                 {{ number_format($event->price, 0, ',', '.') }}</dd>
@@ -71,7 +71,7 @@
                                         <div class="">
                                             <div class="flex gap-1 items-center">
                                                 <i class="fas fa-calendar-alt me-1" style="color: #a0aaba;"></i>
-                                                <dt class="text-sm font-medium text-gray-500">Date & Time:</dt>
+                                                <dt class="text-sm font-medium text-gray-700">Tanggal & Waktu:</dt>
                                             </div>
                                             <dd class="text-sm text-gray-900">
                                                 {{ $event->event_date->format('d M Y H:i') }}</dd>
@@ -80,17 +80,17 @@
                                         <div class="">
                                             <div class="flex gap-1 items-center">
                                                 <i class="fa-solid fa-location-dot me-1" style="color: #a0aaba;"></i>
-                                                <dt class="text-sm font-medium text-gray-500">Location:</dt>
+                                                <dt class="text-sm font-medium text-gray-700">Location:</dt>
                                             </div>
                                             <dd class="text-sm text-gray-900">{{ $event->location }}</dd>
                                         </div>
 
                                         <div class="">
-                                            <dt class="text-sm font-medium text-gray-500">Quota:</dt>
+                                            <dt class="text-sm font-medium text-gray-700">Quota:</dt>
                                             <dd class="text-sm text-gray-900">{{ $event->quota }} tickets</dd>
                                         </div>
                                         <div class="">
-                                            <dt class="text-sm font-medium text-gray-500">Remaining Quota:</dt>
+                                            <dt class="text-sm font-medium text-gray-700">Remaining Quota:</dt>
                                             <dd class="text-sm text-gray-900">{{ $event->remaining_quota }} tickets
                                             </dd>
                                         </div>
@@ -102,28 +102,28 @@
                     </div>
 
                     {{-- <div class="mt-8">
-                        <h3 class="text-lg font-medium text-gray-900 mb-4">Orders</h3>
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">Pesanan</h3>
                         <div class="overflow-x-auto">
                             <table class="min-w-full divide-y divide-gray-200">
                                 <thead class="bg-gray-50">
                                     <tr>
                                         <th scope="col"
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
                                             Order ID</th>
                                         <th scope="col"
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
                                             User</th>
                                         <th scope="col"
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
                                             Quantity</th>
                                         <th scope="col"
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
                                             Total Price</th>
                                         <th scope="col"
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
                                             Status</th>
                                         <th scope="col"
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
                                             Actions</th>
                                     </tr>
                                 </thead>
@@ -149,13 +149,13 @@
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                                 <a href="{{ route('admin.orders.show', $order) }}"
-                                                    class="text-blue-600 hover:text-blue-900">View Details</a>
+                                                    class="text-blue-600 hover:text-blue-900">Lihat Detail</a>
                                             </td>
                                         </tr>
                                     @empty
                                         <tr>
                                             <td colspan="6"
-                                                class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
+                                                class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 text-center">
                                                 No orders found for this event.
                                             </td>
                                         </tr>

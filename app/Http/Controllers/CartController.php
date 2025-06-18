@@ -52,15 +52,18 @@ class CartController extends Controller
         if ($carts->isEmpty()) {
             return back()->with('error', 'Keranjang kosong.');
         }
-        $total = $carts->sum(fn($c) => $c->price * $c->quantity);
-        $transaction = Transaction::create([
-            'user_id' => Auth::id(),
-            'event_id' => $carts->first()->event_id,
-            'quantity' => $carts->sum('quantity'),
-            'amount' => $total,
-            'status' => 'pending',
-        ]);
+        $transactionIds = [];
+        foreach ($carts as $cart) {
+            $transaction = Transaction::create([
+                'user_id' => Auth::id(),
+                'event_id' => $cart->event_id,
+                'quantity' => $cart->quantity,
+                'amount' => $cart->price * $cart->quantity,
+                'status' => 'pending',
+            ]);
+            $transactionIds[] = $transaction->id;
+        }
         Cart::where('user_id', Auth::id())->delete();
-        return redirect()->route('transactions.index')->with('success', 'Transaksi berhasil dibuat, silakan lakukan pembayaran.');
+        return redirect()->route('transactions.index')->with('success', 'Transaksi berhasil dibuat untuk setiap event, silakan lakukan pembayaran.');
     }
 }

@@ -3,14 +3,15 @@
 @section('content')
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+            <a href="{{ route('orders.index') }}"
+                class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+                Kembali ke Pesanan
+            </a>
+            <div class="bg-white overflow-hidden mt-6 shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
                     <div class="flex justify-between items-center mb-6">
-                        <h2 class="text-2xl font-semibold">Order Details</h2>
-                        <a href="{{ route('orders.index') }}"
-                            class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
-                            Back to Orders
-                        </a>
+                        <h2 class="text-2xl font-semibold">Detail Pesanan</h2>
+
                     </div>
 
                     @if (session('success'))
@@ -29,42 +30,42 @@
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <div>
-                            <h3 class="text-lg font-medium text-gray-900 mb-4">Event Information</h3>
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">Informasi Event</h3>
                             <dl class="space-y-4">
                                 <div>
-                                    <dt class="text-sm font-medium text-gray-500">Event Title</dt>
+                                    <dt class="text-sm font-medium text-gray-700">Nama Event</dt>
                                     <dd class="mt-1 text-sm text-gray-900">{{ $order->event->title }}</dd>
                                 </div>
                                 <div>
-                                    <dt class="text-sm font-medium text-gray-500">Date & Time</dt>
+                                    <dt class="text-sm font-medium text-gray-700">Tanggal & Waktu</dt>
                                     <dd class="mt-1 text-sm text-gray-900">
                                         {{ $order->event->event_date->format('d M Y H:i') }}</dd>
                                 </div>
                                 <div>
-                                    <dt class="text-sm font-medium text-gray-500">Location</dt>
+                                    <dt class="text-sm font-medium text-gray-700">Lokasi</dt>
                                     <dd class="mt-1 text-sm text-gray-900">{{ $order->event->location }}</dd>
                                 </div>
                             </dl>
                         </div>
 
                         <div>
-                            <h3 class="text-lg font-medium text-gray-900 mb-4">Order Information</h3>
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">Informasi Pesanan</h3>
                             <dl class="space-y-4">
                                 <div>
-                                    <dt class="text-sm font-medium text-gray-500">Order ID</dt>
+                                    <dt class="text-sm font-medium text-gray-700">ID Pesanan</dt>
                                     <dd class="mt-1 text-sm text-gray-900">{{ $order->id }}</dd>
                                 </div>
                                 <div>
-                                    <dt class="text-sm font-medium text-gray-500">Quantity</dt>
+                                    <dt class="text-sm font-medium text-gray-700">Jumlah Tiket</dt>
                                     <dd class="mt-1 text-sm text-gray-900">{{ $order->quantity }} tickets</dd>
                                 </div>
                                 <div>
-                                    <dt class="text-sm font-medium text-gray-500">Total Price</dt>
+                                    <dt class="text-sm font-medium text-gray-700">Total Harga</dt>
                                     <dd class="mt-1 text-lg font-bold text-blue-600">Rp
                                         {{ number_format($order->total_price, 0, ',', '.') }}</dd>
                                 </div>
                                 <div>
-                                    <dt class="text-sm font-medium text-gray-500">Status</dt>
+                                    <dt class="text-sm font-medium text-gray-700">Status</dt>
                                     <dd class="mt-1">
                                         <span
                                             class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
@@ -79,11 +80,11 @@
                         </div>
                     </div>
 
-                    @if ($order->status === 'pending')
+                    {{-- @if ($order->status === 'pending')
                         <div class="mt-8">
                             <h3 class="text-lg font-medium text-gray-900 mb-4">Payment Information</h3>
                             <div class="bg-gray-50 p-4 rounded-lg">
-                                <p class="text-sm text-gray-600 mb-4">Please complete your payment to get your tickets.</p>
+                                <p class="text-sm text-gray-700 mb-4">Please complete your payment to get your tickets.</p>
                                 <form action="{{ route('transactions.store') }}" method="POST">
                                     @csrf
                                     <input type="hidden" name="order_id" value="{{ $order->id }}">
@@ -111,25 +112,30 @@
 
                     <div class="mt-8">
                         <h3 class="text-lg font-medium text-gray-900 mb-4">Order Information</h3>
-                        {{-- ... tampilkan detail order di sini ... --}}
-                    </div>
+                    </div> --}}
 
                     @if ($order->status === 'paid')
                         <div class="mt-8">
-                            <h3 class="text-lg font-medium text-gray-900 mb-4">Tickets</h3>
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">Tiket Anda</h3>
                             <div class="space-y-4">
                                 @foreach ($order->tickets as $ticket)
-                                    <div class="bg-gray-50 p-4 rounded-lg">
+                                    <div class="bg-white p-6 rounded-lg shadow-md">
                                         <div class="flex justify-between items-center">
                                             <div>
-                                                <p class="text-sm font-medium text-gray-900">Ticket Code:
-                                                    {{ $ticket->ticket_code }}</p>
-                                                <p class="text-sm text-gray-500">Status: {{ ucfirst($ticket->status) }}</p>
+                                                <p class="text-sm font-medium text-gray-900">Kode Tiket: <span
+                                                        class="font-mono">{{ $ticket->ticket_code }}</span></p>
+                                                <p class="text-sm text-gray-600">Status: {{ ucfirst($ticket->status) }}</p>
                                             </div>
-                                            <button onclick="window.print()"
-                                                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                                                Print Ticket
-                                            </button>
+                                            <a href="{{ route('tickets.download', $ticket) }}"
+                                                class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2"
+                                                    viewBox="0 0 20 20" fill="currentColor">
+                                                    <path fill-rule="evenodd"
+                                                        d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
+                                                        clip-rule="evenodd" />
+                                                </svg>
+                                                Download E-Ticket
+                                            </a>
                                         </div>
                                     </div>
                                 @endforeach

@@ -21,7 +21,7 @@
 
                 @if ($events->isEmpty())
                     <div class="text-center py-8">
-                        <p class="text-gray-500">No upcoming events available.</p>
+                        <p class="text-gray-700">No upcoming events available.</p>
                     </div>
                 @else
                     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">

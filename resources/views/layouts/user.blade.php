@@ -23,7 +23,7 @@
     <nav class="bg-white shadow-md py-1">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
-                <a class="flex items-center text-gray-800 font-extrabold text-xl" href="/">
+                <a class="flex items-center text-gray-700 font-extrabold text-xl" href="/">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
                         class="bi bi-ticket-perforated text-blue-600" viewBox="0 0 16 16">
                         <path
@@ -71,7 +71,7 @@
     </div>
 
     <!-- Footer -->
-    <footer class="bg-white border-t border-gray-200 py-3 text-center text-gray-500 text-sm">
+    <footer class="bg-white border-t border-gray-200 py-3 text-center text-gray-700 text-sm">
         &copy; 2024 JelajahEvent. All rights reserved.
     </footer>
 

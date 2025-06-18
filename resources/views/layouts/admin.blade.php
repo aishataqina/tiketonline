@@ -78,16 +78,16 @@
                 <div class="nav-header">Manajemen Event</div>
                 <a href="{{ route('admin.events.index') }}"
                     class="sidebar-link {{ request()->routeIs('admin.events.*') ? 'active' : '' }}">
-                    <i class="fas fa-calendar-alt me-2"></i> Events
+                    <i class="fas fa-calendar-alt me-2"></i> Event
                 </a>
                 <div class="nav-header">Transaksi</div>
                 <a href="{{ route('admin.orders.index') }}"
                     class="sidebar-link {{ request()->routeIs('admin.orders.*') ? 'active' : '' }}">
-                    <i class="fas fa-receipt me-2"></i> Orders
+                    <i class="fas fa-receipt me-2"></i> Pesanan
                 </a>
                 <a href="{{ route('admin.transactions.index') }}"
                     class="sidebar-link {{ request()->routeIs('admin.transactions.*') ? 'active' : '' }}">
-                    <i class="fas fa-credit-card me-2"></i> Transactions
+                    <i class="fas fa-credit-card me-2"></i> Transaksi
                 </a>
                 <div class="nav-header">Pengaturan</div>
                 <a href="#" class="sidebar-link">

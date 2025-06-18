@@ -32,17 +32,17 @@
                             <h3 class="text-lg font-medium text-gray-900 mb-4">Informasi Event</h3>
                             <dl class="space-y-4">
                                 <div>
-                                    <dt class="text-sm font-medium text-gray-500">Judul Event</dt>
+                                    <dt class="text-sm font-medium text-gray-700">Judul Event</dt>
                                     <dd class="mt-1 text-sm text-gray-900">{{ $transaction->event->title ?? '-' }}</dd>
                                 </div>
                                 <div>
-                                    <dt class="text-sm font-medium text-gray-500">Tanggal & Waktu</dt>
+                                    <dt class="text-sm font-medium text-gray-700">Tanggal & Waktu</dt>
                                     <dd class="mt-1 text-sm text-gray-900">
                                         {{ $transaction->event->event_date ? $transaction->event->event_date->format('d M Y H:i') : '-' }}
                                     </dd>
                                 </div>
                                 <div>
-                                    <dt class="text-sm font-medium text-gray-500">Lokasi</dt>
+                                    <dt class="text-sm font-medium text-gray-700">Lokasi</dt>
                                     <dd class="mt-1 text-sm text-gray-900">{{ $transaction->event->location ?? '-' }}</dd>
                                 </div>
                             </dl>
@@ -51,20 +51,20 @@
                             <h3 class="text-lg font-medium text-gray-900 mb-4">Informasi Transaksi</h3>
                             <dl class="space-y-4">
                                 <div>
-                                    <dt class="text-sm font-medium text-gray-500">ID Transaksi</dt>
+                                    <dt class="text-sm font-medium text-gray-700">ID Transaksi</dt>
                                     <dd class="mt-1 text-sm text-gray-900">{{ $transaction->id }}</dd>
                                 </div>
                                 <div>
-                                    <dt class="text-sm font-medium text-gray-500">Jumlah Tiket</dt>
+                                    <dt class="text-sm font-medium text-gray-700">Jumlah Tiket</dt>
                                     <dd class="mt-1 text-sm text-gray-900">{{ $transaction->quantity }}</dd>
                                 </div>
                                 <div>
-                                    <dt class="text-sm font-medium text-gray-500">Total Harga</dt>
+                                    <dt class="text-sm font-medium text-gray-700">Total Harga</dt>
                                     <dd class="mt-1 text-lg font-bold text-blue-600">Rp
                                         {{ number_format($transaction->amount, 0, ',', '.') }}</dd>
                                 </div>
                                 <div>
-                                    <dt class="text-sm font-medium text-gray-500">Status</dt>
+                                    <dt class="text-sm font-medium text-gray-700">Status</dt>
                                     <dd class="mt-1">
                                         <span
                                             class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
@@ -83,7 +83,7 @@
                         <div class="mt-8">
                             <h3 class="text-lg font-medium text-gray-900 mb-4">Pembayaran</h3>
                             <div class="bg-gray-50 p-4 rounded-lg">
-                                <p class="text-sm text-gray-600 mb-4">Silakan klik tombol di bawah untuk melakukan
+                                <p class="text-sm text-gray-700 mb-4">Silakan klik tombol di bawah untuk melakukan
                                     pembayaran melalui Midtrans.</p>
                                 <form id="midtrans-form" method="POST" action="#" onsubmit="return false;">
                                     <button id="pay-button" type="button"

@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('event_id')->constrained()->onDelete('cascade');
             $table->string('ticket_code')->unique();
             $table->foreignId('user_id')->nullable()->constrained()->onDelete('set null');
+            $table->foreignId('order_id')->nullable()->constrained()->onDelete('set null');
             $table->enum('status', ['available', 'reserved', 'sold'])->default('available');
             $table->timestamps();
         });

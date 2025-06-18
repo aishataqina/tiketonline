@@ -146,6 +146,16 @@ class TransactionController extends Controller
             $transaction->status = 'success';
             $transaction->paid_at = now();
             $transaction->save();
+            // Generate tiket sesuai quantity dan pastikan order_id terisi
+            for ($i = 0; $i < $transaction->quantity; $i++) {
+                \App\Models\Ticket::create([
+                    'order_id' => $order->id,
+                    'event_id' => $order->event_id,
+                    'user_id' => $order->user_id,
+                    'ticket_code' => 'TIKET-' . strtoupper(uniqid()),
+                    'status' => 'sold',
+                ]);
+            }
         } elseif ($notif->transaction_status == 'pending') {
             $transaction->status = 'pending';
             $transaction->save();
@@ -225,13 +235,38 @@ class TransactionController extends Controller
                     ->where('status', 'paid')
                     ->first();
                 if (!$existingOrder) {
-                    \App\Models\Order::create([
+                    $order = \App\Models\Order::create([
                         'user_id' => $transaction->user_id,
                         'event_id' => $transaction->event_id,
                         'quantity' => $transaction->quantity,
                         'total_price' => $transaction->amount,
                         'status' => 'paid',
                     ]);
+                    // Generate tiket sesuai quantity dan pastikan order_id terisi
+                    for ($i = 0; $i < $transaction->quantity; $i++) {
+                        \App\Models\Ticket::create([
+                            'order_id' => $order->id,
+                            'event_id' => $order->event_id,
+                            'user_id' => $order->user_id,
+                            'ticket_code' => 'TIKET-' . strtoupper(uniqid()),
+                            'status' => 'sold',
+                        ]);
+                    }
+                } else {
+                    // Jika order sudah ada, pastikan tiket juga sudah ada
+                    $order = $existingOrder;
+                    $tiketCount = $order->tickets()->count();
+                    if ($tiketCount < $transaction->quantity) {
+                        for ($i = $tiketCount; $i < $transaction->quantity; $i++) {
+                            \App\Models\Ticket::create([
+                                'order_id' => $order->id,
+                                'event_id' => $order->event_id,
+                                'user_id' => $order->user_id,
+                                'ticket_code' => 'TIKET-' . strtoupper(uniqid()),
+                                'status' => 'sold',
+                            ]);
+                        }
+                    }
                 }
             }
             return response()->json(['success' => true]);
