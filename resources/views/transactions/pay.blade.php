@@ -3,14 +3,16 @@
 @section('content')
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center mb-6">
+                <a href="{{ route('transactions.index') }}"
+                    class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+                    Kembali ke Daftar Pembayaran
+                </a>
+            </div>
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
                     <div class="flex justify-between items-center mb-6">
                         <h2 class="text-2xl font-semibold">Pembayaran Pesanan</h2>
-                        <a href="{{ route('transactions.index') }}"
-                            class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
-                            Kembali ke Daftar Pembayaran
-                        </a>
                     </div>
 
                     @if (session('success'))
@@ -116,7 +118,7 @@
                                                 } else {
                                                     alert(data.message ||
                                                         'Terjadi kesalahan saat memproses pembayaran. Silakan hubungi admin.'
-                                                        );
+                                                    );
                                                     document.getElementById('pay-button').disabled = false;
                                                     document.getElementById('pay-button').innerHTML =
                                                         'Bayar dengan Midtrans';
@@ -125,7 +127,8 @@
                                             .catch(error => {
                                                 console.error('Error:', error);
                                                 alert(
-                                                'Terjadi kesalahan saat memproses pembayaran. Silakan hubungi admin.');
+                                                    'Terjadi kesalahan saat memproses pembayaran. Silakan hubungi admin.'
+                                                );
                                                 document.getElementById('pay-button').disabled = false;
                                                 document.getElementById('pay-button').innerHTML = 'Bayar dengan Midtrans';
                                             });

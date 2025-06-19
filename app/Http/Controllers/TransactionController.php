@@ -37,7 +37,7 @@ class TransactionController extends Controller
 
         $transaction = Transaction::create([
             'order_id' => $order->id,
-            'transaction_code' => 'TRX-' . Str::random(10),
+            'transaction_code' => 'TSX-' . Str::random(10),
             'amount' => $order->total_price,
             'payment_method' => $request->payment_method,
             'status' => 'pending'
@@ -69,7 +69,7 @@ class TransactionController extends Controller
         // Snap Token hanya digenerate sekali per transaksi
         if (empty($transaction->snap_token)) {
             // Generate order ID yang konsisten
-            $orderId = 'ORDER-' . $transaction->id . '-' . Str::random(8);
+            $orderId = 'TSX-' . $transaction->id . '-' . Str::random(8);
 
             $params = [
                 'transaction_details' => [
@@ -131,60 +131,50 @@ class TransactionController extends Controller
             'gross_amount' => $notif->gross_amount
         ]);
 
-        preg_match('/ORDER-(\d+)/', $notif->order_id, $matches);
+        // Extract transaction ID from order ID
+        preg_match('/TSX-(\d+)-/', $notif->order_id, $matches);
         $transactionId = $matches[1] ?? null;
         $transaction = Transaction::find($transactionId);
 
         if (!$transaction) {
-            \Log::error('Transaction not found:', ['transaction_id' => $transactionId]);
+            \Log::error('Transaction not found:', ['order_id' => $notif->order_id]);
             return response()->json(['message' => 'Transaction not found'], 404);
         }
 
         if ($notif->transaction_status == 'settlement' || $notif->transaction_status == 'capture') {
-            // Buat order baru dari transaksi jika belum ada
-            $existingOrder = Order::where('user_id', $transaction->user_id)
-                ->where('event_id', $transaction->event_id)
-                ->where('quantity', $transaction->quantity)
-                ->where('total_price', $transaction->amount)
-                ->where('status', 'paid')
-                ->first();
+            // Selalu buat order baru untuk setiap transaksi sukses
+            $order = Order::create([
+                'user_id' => $transaction->user_id,
+                'event_id' => $transaction->event_id,
+                'quantity' => $transaction->quantity,
+                'total_price' => $transaction->amount,
+                'status' => 'paid',
+                'order_code' => 'ORD-' . Str::upper(Str::random(10))
+            ]);
 
-            if (!$existingOrder) {
-                $order = Order::create([
-                    'user_id' => $transaction->user_id,
-                    'event_id' => $transaction->event_id,
-                    'quantity' => $transaction->quantity,
-                    'total_price' => $transaction->amount,
-                    'status' => 'paid',
+            // Update sisa kuota event
+            $event = Event::find($transaction->event_id);
+            if ($event) {
+                $event->decrement('remaining_quota', $transaction->quantity);
+                if ($event->remaining_quota <= 0) {
+                    $event->update(['status' => 'sold_out']);
+                }
+            }
+
+            // Generate tiket sesuai quantity
+            for ($i = 0; $i < $transaction->quantity; $i++) {
+                Ticket::create([
+                    'order_id' => $order->id,
+                    'event_id' => $order->event_id,
+                    'user_id' => $order->user_id,
+                    'ticket_code' => 'TIKET-' . strtoupper(uniqid()),
+                    'status' => 'sold',
                 ]);
-
-                // Update sisa kuota event
-                $event = \App\Models\Event::find($transaction->event_id);
-                if ($event) {
-                    $event->decrement('remaining_quota', $transaction->quantity);
-                    if ($event->remaining_quota <= 0) {
-                        $event->update(['status' => 'sold_out']);
-                    }
-                }
-
-                // Generate tiket sesuai quantity
-                for ($i = 0; $i < $transaction->quantity; $i++) {
-                    \App\Models\Ticket::create([
-                        'order_id' => $order->id,
-                        'event_id' => $order->event_id,
-                        'user_id' => $order->user_id,
-                        'ticket_code' => 'TIKET-' . strtoupper(uniqid()),
-                        'status' => 'sold',
-                    ]);
-                }
             }
 
             $transaction->status = 'success';
             $transaction->paid_at = now();
             $transaction->payment_type = $notif->payment_type;
-            $transaction->save();
-        } elseif ($notif->transaction_status == 'pending') {
-            $transaction->status = 'pending';
             $transaction->save();
         } elseif ($notif->transaction_status == 'deny') {
             $transaction->status = 'denied';
@@ -213,6 +203,16 @@ class TransactionController extends Controller
 
         $event = \App\Models\Event::findOrFail($request->event_id);
         $user = Auth::user();
+
+        // Cek apakah user memiliki transaksi pending untuk event ini
+        $pendingTransaction = Transaction::where('user_id', $user->id)
+            ->where('event_id', $event->id)
+            ->where('status', 'pending')
+            ->first();
+
+        if ($pendingTransaction) {
+            return redirect()->back()->with('error', 'Anda masih memiliki transaksi yang belum dibayar untuk event ini. Silakan selesaikan pembayaran terlebih dahulu.');
+        }
 
         // Cek kuota
         if ($event->remaining_quota < $request->quantity) {
@@ -263,39 +263,34 @@ class TransactionController extends Controller
                 if ($transaction->status !== 'success') {
                     Log::info('Pembayaran berhasil, memproses order');
 
-                    $existingOrder = Order::where('user_id', $transaction->user_id)
-                        ->where('event_id', $transaction->event_id)
-                        ->where('quantity', $transaction->quantity)
-                        ->where('total_price', $transaction->amount)
-                        ->where('status', 'paid')
-                        ->first();
+                    // Selalu buat order baru untuk setiap transaksi sukses
+                    $order = Order::create([
+                        'user_id' => $transaction->user_id,
+                        'event_id' => $transaction->event_id,
+                        'quantity' => $transaction->quantity,
+                        'total_price' => $transaction->amount,
+                        'status' => 'paid',
+                        'order_code' => 'ORD-' . Str::upper(Str::random(10))
+                    ]);
 
-                    if (!$existingOrder) {
-                        $order = Order::create([
-                            'user_id' => $transaction->user_id,
-                            'event_id' => $transaction->event_id,
-                            'quantity' => $transaction->quantity,
-                            'total_price' => $transaction->amount,
-                            'status' => 'paid',
+                    // Update sisa kuota event
+                    $event = Event::find($transaction->event_id);
+                    if ($event) {
+                        $event->decrement('remaining_quota', $transaction->quantity);
+                        if ($event->remaining_quota <= 0) {
+                            $event->update(['status' => 'sold_out']);
+                        }
+                    }
+
+                    // Generate tiket sesuai quantity
+                    for ($i = 0; $i < $transaction->quantity; $i++) {
+                        Ticket::create([
+                            'order_id' => $order->id,
+                            'event_id' => $order->event_id,
+                            'user_id' => $order->user_id,
+                            'ticket_code' => 'TIKET-' . strtoupper(uniqid()),
+                            'status' => 'sold',
                         ]);
-
-                        $event = Event::find($transaction->event_id);
-                        if ($event) {
-                            $event->decrement('remaining_quota', $transaction->quantity);
-                            if ($event->remaining_quota <= 0) {
-                                $event->update(['status' => 'sold_out']);
-                            }
-                        }
-
-                        for ($i = 0; $i < $transaction->quantity; $i++) {
-                            Ticket::create([
-                                'order_id' => $order->id,
-                                'event_id' => $order->event_id,
-                                'user_id' => $order->user_id,
-                                'ticket_code' => 'TIKET-' . strtoupper(uniqid()),
-                                'status' => 'sold',
-                            ]);
-                        }
                     }
 
                     $transaction->status = 'success';
@@ -305,7 +300,8 @@ class TransactionController extends Controller
 
                     Log::info('Pembayaran berhasil diproses:', [
                         'transaction_id' => $transaction->id,
-                        'new_status' => $transaction->status
+                        'new_status' => $transaction->status,
+                        'order_id' => $order->id
                     ]);
 
                     return response()->json(['success' => true]);

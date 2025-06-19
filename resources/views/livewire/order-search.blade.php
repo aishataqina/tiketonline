@@ -19,8 +19,15 @@
                 <tr>
                     <th wire:click="sortBy('id')"
                         class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider cursor-pointer">
-                        ID Pesanan
+                        no
                         @if ($sortField === 'id')
+                            <span class="ml-1">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                        @endif
+                    </th>
+                    <th wire:click="sortBy('order_code')"
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider cursor-pointer">
+                        id pesanan
+                        @if ($sortField === 'order_code')
                             <span class="ml-1">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                         @endif
                     </th>
@@ -59,11 +66,13 @@
             <tbody class="bg-white divide-y divide-gray-200">
                 @foreach ($orders as $order)
                     <tr>
-                        <td class="px-6 py-4 whitespace-nowrap">{{ $order->id }}</td>
+                        <td class="px-6 py-4">{{ $order->id }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">{{ $order->order_code }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">{{ $order->user->name }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">{{ $order->event->title }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">{{ $order->quantity }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">Rp {{ number_format($order->total_price, 0, ',', '.') }}
+                        <td class="px-6 py-4 whitespace-nowrap">Rp
+                            {{ number_format($order->total_price, 0, ',', '.') }}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <span

@@ -7,6 +7,7 @@ use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class OrderController extends Controller
 {
@@ -18,10 +19,13 @@ class OrderController extends Controller
         if (Auth::user() && Auth::user()->is_admin) {
             abort(403, 'Admin tidak boleh mengakses halaman user.');
         }
+
         $orders = Order::where('user_id', Auth::id())
-            // ->whereIn('status', ['paid', 'completed'])
+            ->where('status', 'paid')
+            ->with(['event', 'tickets'])
             ->latest()
             ->paginate(10);
+
         return view('orders.index', compact('orders'));
     }
 
@@ -52,8 +56,10 @@ class OrderController extends Controller
                 'event_id' => $event->id,
                 'quantity' => $request->quantity,
                 'total_price' => $event->price * $request->quantity,
-                'status' => 'pending'
+                'status' => 'pending',
+                'order_code' => 'ORD-' . Str::upper(Str::random(10)), // <<< Tambahkan baris ini
             ]);
+
 
             $event->decrement('remaining_quota', $request->quantity);
 

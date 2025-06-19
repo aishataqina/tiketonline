@@ -17,6 +17,13 @@
         <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
                 <tr>
+                    <th wire:click="sortBy('id')"
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider cursor-pointer">
+                        no
+                        @if ($sortField === 'id')
+                            <span class="ml-1">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                        @endif
+                    </th>
                     <th wire:click="sortBy('title')"
                         class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider cursor-pointer">
                         Nama Event
@@ -67,6 +74,7 @@
             <tbody class="bg-white divide-y divide-gray-200">
                 @foreach ($events as $event)
                     <tr>
+                        <td class="px-6 py-4">{{ $event->id }}</td>
                         <td class="px-6 py-4">{{ $event->title }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">{{ $event->event_date->format('d M Y H:i') }}</td>
                         <td class="px-6 py-4">{{ $event->location }}</td>

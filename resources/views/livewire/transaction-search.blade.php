@@ -17,17 +17,17 @@
         <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
                 <tr>
+                    <th wire:click="sortBy('id')"
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider cursor-pointer">
+                        no
+                        @if ($sortField === 'id')
+                            <span class="ml-1">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                        @endif
+                    </th>
                     <th wire:click="sortBy('transaction_code')"
                         class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider cursor-pointer">
                         Kode Transaksi
                         @if ($sortField === 'transaction_code')
-                            <span class="ml-1">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
-                        @endif
-                    </th>
-                    <th wire:click="sortBy('midtrans_order_id')"
-                        class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider cursor-pointer">
-                        ID Pesanan
-                        @if ($sortField === 'midtrans_order_id')
                             <span class="ml-1">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                         @endif
                     </th>
@@ -64,7 +64,7 @@
             <tbody class="bg-white divide-y divide-gray-200">
                 @foreach ($transactions as $transaction)
                     <tr>
-                        <td class="px-6 py-4 whitespace-nowrap">{{ $transaction->transaction_code }}</td>
+                        <td class="px-6 py-4">{{ $transaction->id }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">{{ $transaction->midtrans_order_id }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">Rp
                             {{ number_format($transaction->amount, 0, ',', '.') }}</td>

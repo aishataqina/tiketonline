@@ -53,7 +53,7 @@
                             <dl class="space-y-4">
                                 <div>
                                     <dt class="text-sm font-medium text-gray-700">ID Pesanan</dt>
-                                    <dd class="mt-1 text-sm text-gray-900">{{ $order->id }}</dd>
+                                    <dd class="mt-1 text-sm text-gray-900">{{ $order->order_code }}</dd>
                                 </div>
                                 <div>
                                     <dt class="text-sm font-medium text-gray-700">Jumlah Tiket</dt>
