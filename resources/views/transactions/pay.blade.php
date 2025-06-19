@@ -97,9 +97,37 @@
                             document.getElementById('pay-button').onclick = function() {
                                 window.snap.pay('{{ $snapToken }}', {
                                     onSuccess: function(result) {
-                                        fetch('/transactions/' + {{ $transaction->id }} + '/confirm')
-                                            .then(() => {
-                                                window.location.href = "{{ route('transactions.index') }}?paid=1";
+                                        // Tampilkan loading
+                                        document.getElementById('pay-button').disabled = true;
+                                        document.getElementById('pay-button').innerHTML = 'Memproses pembayaran...';
+
+                                        // Konfirmasi pembayaran ke server
+                                        fetch('/transactions/{{ $transaction->id }}/confirm', {
+                                                method: 'POST',
+                                                headers: {
+                                                    'Content-Type': 'application/json',
+                                                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                                }
+                                            })
+                                            .then(response => response.json())
+                                            .then(data => {
+                                                if (data.success) {
+                                                    window.location.href = "{{ route('transactions.index') }}?paid=1";
+                                                } else {
+                                                    alert(data.message ||
+                                                        'Terjadi kesalahan saat memproses pembayaran. Silakan hubungi admin.'
+                                                        );
+                                                    document.getElementById('pay-button').disabled = false;
+                                                    document.getElementById('pay-button').innerHTML =
+                                                        'Bayar dengan Midtrans';
+                                                }
+                                            })
+                                            .catch(error => {
+                                                console.error('Error:', error);
+                                                alert(
+                                                'Terjadi kesalahan saat memproses pembayaran. Silakan hubungi admin.');
+                                                document.getElementById('pay-button').disabled = false;
+                                                document.getElementById('pay-button').innerHTML = 'Bayar dengan Midtrans';
                                             });
                                     },
                                     onPending: function(result) {

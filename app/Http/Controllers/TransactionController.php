@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Auth;
 use Midtrans\Config;
 use Midtrans\Snap;
 use Illuminate\Support\Facades\Log;
+use App\Models\Event;
+use App\Models\Ticket;
 
 class TransactionController extends Controller
 {
@@ -66,19 +68,32 @@ class TransactionController extends Controller
 
         // Snap Token hanya digenerate sekali per transaksi
         if (empty($transaction->snap_token)) {
+            // Generate order ID yang konsisten
+            $orderId = 'ORDER-' . $transaction->id . '-' . Str::random(8);
+
             $params = [
                 'transaction_details' => [
-                    'order_id' => 'ORDER-' . $transaction->id . '-' . now()->timestamp,
-                    'gross_amount' => $transaction->amount,
+                    'order_id' => $orderId,
+                    'gross_amount' => (int)$transaction->amount,
                 ],
                 'customer_details' => [
                     'first_name' => Auth::user()->name,
                     'email' => Auth::user()->email,
                 ],
             ];
-            $snapToken = \Midtrans\Snap::getSnapToken($params);
-            $transaction->snap_token = $snapToken;
-            $transaction->save();
+
+            try {
+                $snapToken = \Midtrans\Snap::getSnapToken($params);
+                $transaction->snap_token = $snapToken;
+                $transaction->midtrans_order_id = $orderId; // Simpan order ID
+                $transaction->save();
+            } catch (\Exception $e) {
+                \Log::error('Error generating snap token:', [
+                    'transaction_id' => $transaction->id,
+                    'error' => $e->getMessage()
+                ]);
+                return back()->with('error', 'Terjadi kesalahan saat mempersiapkan pembayaran. Silakan coba lagi.');
+            }
         } else {
             $snapToken = $transaction->snap_token;
         }
@@ -101,7 +116,6 @@ class TransactionController extends Controller
 
     public function midtransCallback(Request $request)
     {
-        dd($request->all());
         \Midtrans\Config::$serverKey = config('midtrans.server_key');
         \Midtrans\Config::$isProduction = config('midtrans.is_production');
         \Midtrans\Config::$isSanitized = true;
@@ -127,35 +141,47 @@ class TransactionController extends Controller
         }
 
         if ($notif->transaction_status == 'settlement' || $notif->transaction_status == 'capture') {
-            // Buat order baru dari transaksi
-            $order = Order::create([
-                'user_id' => $transaction->user_id,
-                'event_id' => $transaction->event_id,
-                'quantity' => $transaction->quantity,
-                'total_price' => $transaction->amount,
-                'status' => 'paid',
-            ]);
-            // Update sisa kuota event
-            $event = \App\Models\Event::find($transaction->event_id);
-            if ($event) {
-                $event->decrement('remaining_quota', $transaction->quantity);
-                if ($event->remaining_quota <= 0) {
-                    $event->update(['status' => 'sold_out']);
+            // Buat order baru dari transaksi jika belum ada
+            $existingOrder = Order::where('user_id', $transaction->user_id)
+                ->where('event_id', $transaction->event_id)
+                ->where('quantity', $transaction->quantity)
+                ->where('total_price', $transaction->amount)
+                ->where('status', 'paid')
+                ->first();
+
+            if (!$existingOrder) {
+                $order = Order::create([
+                    'user_id' => $transaction->user_id,
+                    'event_id' => $transaction->event_id,
+                    'quantity' => $transaction->quantity,
+                    'total_price' => $transaction->amount,
+                    'status' => 'paid',
+                ]);
+
+                // Update sisa kuota event
+                $event = \App\Models\Event::find($transaction->event_id);
+                if ($event) {
+                    $event->decrement('remaining_quota', $transaction->quantity);
+                    if ($event->remaining_quota <= 0) {
+                        $event->update(['status' => 'sold_out']);
+                    }
+                }
+
+                // Generate tiket sesuai quantity
+                for ($i = 0; $i < $transaction->quantity; $i++) {
+                    \App\Models\Ticket::create([
+                        'order_id' => $order->id,
+                        'event_id' => $order->event_id,
+                        'user_id' => $order->user_id,
+                        'ticket_code' => 'TIKET-' . strtoupper(uniqid()),
+                        'status' => 'sold',
+                    ]);
                 }
             }
+
             $transaction->status = 'success';
             $transaction->paid_at = now();
             $transaction->save();
-            // Generate tiket sesuai quantity dan pastikan order_id terisi
-            for ($i = 0; $i < $transaction->quantity; $i++) {
-                \App\Models\Ticket::create([
-                    'order_id' => $order->id,
-                    'event_id' => $order->event_id,
-                    'user_id' => $order->user_id,
-                    'ticket_code' => 'TIKET-' . strtoupper(uniqid()),
-                    'status' => 'sold',
-                ]);
-            }
         } elseif ($notif->transaction_status == 'pending') {
             $transaction->status = 'pending';
             $transaction->save();
@@ -209,56 +235,63 @@ class TransactionController extends Controller
     public function confirmPayment($id)
     {
         $transaction = Transaction::findOrFail($id);
-        // Cek status ke Midtrans
-        \Midtrans\Config::$serverKey = config('midtrans.server_key');
-        \Midtrans\Config::$isProduction = config('midtrans.is_production');
-        \Midtrans\Config::$isSanitized = true;
-        \Midtrans\Config::$is3ds = true;
-        $status = \Midtrans\Transaction::status('ORDER-' . $transaction->id);
-        if ($status->transaction_status == 'settlement' || $status->transaction_status == 'capture') {
-            if ($transaction->status !== 'success') {
-                $transaction->status = 'success';
-                $transaction->paid_at = now();
-                $transaction->save();
-                $event = \App\Models\Event::find($transaction->event_id);
-                if ($event) {
-                    $event->decrement('remaining_quota', $transaction->quantity);
-                    if ($event->remaining_quota <= 0) {
-                        $event->update(['status' => 'sold_out']);
-                    }
-                }
-                // Buat order baru dari transaksi jika belum ada order untuk user, event, dan quantity yang sama
-                $existingOrder = \App\Models\Order::where('user_id', $transaction->user_id)
-                    ->where('event_id', $transaction->event_id)
-                    ->where('quantity', $transaction->quantity)
-                    ->where('total_price', $transaction->amount)
-                    ->where('status', 'paid')
-                    ->first();
-                if (!$existingOrder) {
-                    $order = \App\Models\Order::create([
-                        'user_id' => $transaction->user_id,
-                        'event_id' => $transaction->event_id,
-                        'quantity' => $transaction->quantity,
-                        'total_price' => $transaction->amount,
-                        'status' => 'paid',
-                    ]);
-                    // Generate tiket sesuai quantity dan pastikan order_id terisi
-                    for ($i = 0; $i < $transaction->quantity; $i++) {
-                        \App\Models\Ticket::create([
-                            'order_id' => $order->id,
-                            'event_id' => $order->event_id,
-                            'user_id' => $order->user_id,
-                            'ticket_code' => 'TIKET-' . strtoupper(uniqid()),
-                            'status' => 'sold',
+
+        try {
+            // Log awal pengecekan
+            \Log::info('Mulai cek pembayaran:', [
+                'transaction_id' => $transaction->id,
+                'current_status' => $transaction->status,
+                'midtrans_order_id' => $transaction->midtrans_order_id
+            ]);
+
+            // Cek status ke Midtrans
+            \Midtrans\Config::$serverKey = config('midtrans.server_key');
+            \Midtrans\Config::$isProduction = config('midtrans.is_production');
+            \Midtrans\Config::$isSanitized = true;
+            \Midtrans\Config::$is3ds = true;
+
+            if (!$transaction->midtrans_order_id) {
+                throw new \Exception('Order ID Midtrans tidak ditemukan');
+            }
+
+            \Log::info('Cek status Midtrans:', ['order_id' => $transaction->midtrans_order_id]);
+
+            $status = \Midtrans\Transaction::status($transaction->midtrans_order_id);
+            \Log::info('Status dari Midtrans:', ['status' => $status]);
+
+            if ($status->transaction_status == 'settlement' || $status->transaction_status == 'capture') {
+                if ($transaction->status !== 'success') {
+                    \Log::info('Pembayaran berhasil, memproses order');
+
+                    // Buat order baru dari transaksi jika belum ada
+                    $existingOrder = Order::where('user_id', $transaction->user_id)
+                        ->where('event_id', $transaction->event_id)
+                        ->where('quantity', $transaction->quantity)
+                        ->where('total_price', $transaction->amount)
+                        ->where('status', 'paid')
+                        ->first();
+
+                    if (!$existingOrder) {
+                        $order = Order::create([
+                            'user_id' => $transaction->user_id,
+                            'event_id' => $transaction->event_id,
+                            'quantity' => $transaction->quantity,
+                            'total_price' => $transaction->amount,
+                            'status' => 'paid',
                         ]);
-                    }
-                } else {
-                    // Jika order sudah ada, pastikan tiket juga sudah ada
-                    $order = $existingOrder;
-                    $tiketCount = $order->tickets()->count();
-                    if ($tiketCount < $transaction->quantity) {
-                        for ($i = $tiketCount; $i < $transaction->quantity; $i++) {
-                            \App\Models\Ticket::create([
+
+                        // Update sisa kuota event
+                        $event = Event::find($transaction->event_id);
+                        if ($event) {
+                            $event->decrement('remaining_quota', $transaction->quantity);
+                            if ($event->remaining_quota <= 0) {
+                                $event->update(['status' => 'sold_out']);
+                            }
+                        }
+
+                        // Generate tiket sesuai quantity
+                        for ($i = 0; $i < $transaction->quantity; $i++) {
+                            Ticket::create([
                                 'order_id' => $order->id,
                                 'event_id' => $order->event_id,
                                 'user_id' => $order->user_id,
@@ -267,10 +300,39 @@ class TransactionController extends Controller
                             ]);
                         }
                     }
+
+                    $transaction->status = 'success';
+                    $transaction->paid_at = now();
+                    $transaction->save();
+
+                    \Log::info('Pembayaran berhasil diproses:', [
+                        'transaction_id' => $transaction->id,
+                        'new_status' => $transaction->status
+                    ]);
+
+                    return response()->json(['success' => true]);
                 }
             }
-            return response()->json(['success' => true]);
+
+            \Log::warning('Pembayaran belum selesai:', [
+                'transaction_id' => $transaction->id,
+                'midtrans_status' => $status->transaction_status
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Status pembayaran: ' . ucfirst($status->transaction_status)
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Error saat konfirmasi pembayaran:', [
+                'transaction_id' => $transaction->id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan saat mengecek status pembayaran: ' . $e->getMessage()
+            ]);
         }
-        return response()->json(['success' => false]);
     }
 }

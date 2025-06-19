@@ -33,7 +33,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/transactions', [TransactionController::class, 'store'])->name('transactions.store');
     Route::get('/transactions', [TransactionController::class, 'index'])->name('transactions.index');
     Route::get('/transactions/{transaction}/pay', [TransactionController::class, 'pay'])->name('transactions.pay');
-    Route::get('/transactions/{transaction}/confirm', [TransactionController::class, 'confirmPayment'])->name('transactions.confirm');
+    Route::post('/transactions/{transaction}/confirm', [TransactionController::class, 'confirmPayment'])->name('transactions.confirm');
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
     Route::post('/cart', [CartController::class, 'store'])->name('cart.store');
     Route::patch('/cart/{cart}', [CartController::class, 'update'])->name('cart.update');
