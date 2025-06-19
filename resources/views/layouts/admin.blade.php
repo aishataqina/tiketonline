@@ -63,6 +63,24 @@
             border-top: 1px solid #dee2e6;
             margin: 1rem 0;
         }
+
+        @media (max-width: 768px) {
+            #sidebar {
+                margin-left: -250px;
+            }
+
+            #sidebar.active {
+                margin-left: 0;
+            }
+
+            #content {
+                width: 100%;
+            }
+
+            #content.active {
+                width: calc(100% - 250px);
+            }
+        }
     </style>
 </head>
 
@@ -71,10 +89,14 @@
         <!-- Sidebar -->
         <div id="sidebar">
             <div class="p-3">
-                <h4 class="text-center sidebar-brand font-bold"><i class="fa-solid fa-ticket me-1"></i></i> JelajahEvent
+                <h4 class="text-center sidebar-brand font-bold"><i class="fa-solid fa-ticket me-1"></i> JelajahEvent
                 </h4>
                 <hr class="sidebar-divider">
                 <div class="nav-header">Menu Utama</div>
+                <a href="{{ route('admin.dashboard') }}"
+                    class="sidebar-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+                    <i class="fas fa-tachometer-alt me-2"></i> Dashboard
+                </a>
                 <div class="nav-header">Manajemen Event</div>
                 <a href="{{ route('admin.events.index') }}"
                     class="sidebar-link {{ request()->routeIs('admin.events.*') ? 'active' : '' }}">
@@ -161,28 +183,18 @@
                     </div>
                 @endif
 
-                <!-- Main Content -->
                 @yield('content')
             </div>
         </div>
     </div>
 
-    <!-- Bootstrap JS -->
+    <!-- Bootstrap Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Toggle sidebar
         document.getElementById('menu-toggle').addEventListener('click', function(e) {
             e.preventDefault();
-            const sidebar = document.getElementById('sidebar');
-            const content = document.getElementById('content');
-
-            if (sidebar.style.marginLeft === '-250px') {
-                sidebar.style.marginLeft = '0';
-                content.style.width = 'calc(100% - 250px)';
-            } else {
-                sidebar.style.marginLeft = '-250px';
-                content.style.width = '100%';
-            }
+            document.getElementById('sidebar').classList.toggle('active');
+            document.getElementById('content').classList.toggle('active');
         });
     </script>
     @stack('scripts')

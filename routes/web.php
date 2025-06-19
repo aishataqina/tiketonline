@@ -46,6 +46,7 @@ Route::middleware(['web', 'auth', \App\Http\Middleware\AdminMiddleware::class])
     ->prefix('admin')
     ->name('admin.')
     ->group(function () {
+        Route::get('/dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
         Route::resource('events', AdminEventController::class);
         Route::resource('orders', AdminOrderController::class);
         Route::resource('transactions', AdminTransactionController::class);
@@ -53,5 +54,12 @@ Route::middleware(['web', 'auth', \App\Http\Middleware\AdminMiddleware::class])
 
 // Midtrans Callback Route - harus di luar middleware auth
 Route::post('/midtrans/callback', [TransactionController::class, 'midtransCallback']);
+
+// Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+//     Route::get('/dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
+//     Route::resource('events', App\Http\Controllers\Admin\EventController::class);
+//     Route::resource('orders', App\Http\Controllers\Admin\OrderController::class);
+//     Route::resource('transactions', App\Http\Controllers\Admin\TransactionController::class);
+// });
 
 require __DIR__ . '/auth.php';
