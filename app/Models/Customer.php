@@ -10,25 +10,33 @@ use Illuminate\Database\Eloquent\Model;
 class Customer extends Authenticatable
 {
     use HasFactory, Notifiable;
-    protected $table = 'customer';
+
+    /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
+    protected $table = 'customers';
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
     protected $fillable = [
         'user_id',
-        'nama',
-        'email',
-        'status',
-        'role',
-        'password',
-        'hp',
-        'alamat',
-        'pos',
-        'foto',
-        'google_id',
-        'google_token',
+        'phone',
+        'address',
     ];
+
+    /**
+     * Get the user that owns the customer.
+     */
     public function user()
     {
-        return $this->belongsTo(User::class, 'user_id', 'id');
+        return $this->belongsTo(User::class);
     }
+
     public static function boot()
     {
         parent::boot();
@@ -39,10 +47,12 @@ class Customer extends Authenticatable
             }
         });
     }
+
     protected $hidden = [
         'password',
         'remember_token',
     ];
+
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
