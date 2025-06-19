@@ -22,9 +22,8 @@ class DatabaseSeeder extends Seeder
 
         $this->call([
             AdminSeeder::class,
+            CategorySeeder::class,
+            EventSeeder::class,
         ]);
-
-        $this->call(EventSeeder::class);
-        $this->call(CategorySeeder::class);
     }
 }

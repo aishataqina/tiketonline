@@ -17,17 +17,18 @@ class EventController extends Controller
 
         // Filter berdasarkan kategori
         if ($request->category) {
-            $query->whereHas('categories', function ($q) use ($request) {
-                $q->where('id', $request->category);
-            });
+            $query->where('category_id', $request->category);
         }
 
         $events = $query->where('status', 'active')
             ->where('event_date', '>=', now())
             ->orderBy('event_date')
-            ->paginate(10);
+            ->paginate(12);
 
-        $categories = Category::all();
+        $categories = Category::withCount(['events' => function ($query) {
+            $query->where('status', 'active')
+                ->where('event_date', '>=', now());
+        }])->get();
 
         return view('events.index', compact('events', 'categories'));
     }

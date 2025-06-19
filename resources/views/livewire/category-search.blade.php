@@ -1,10 +1,7 @@
 <div>
-    <div class="mb-4 flex items-center justify-between gap-3">
-        <div class="w-full">
-            <input wire:model.live="search" type="text"
-                class="w-full pl-10 pr-4 py-2 rounded-lg border focus:outline-none focus:border-blue-500"
-                placeholder="Cari kategori...">
-        </div>
+    <div class="mb-4">
+        <input wire:model.live="search" type="text" placeholder="Cari kategori..."
+            class="w-full pl-4 pr-4 py-2 rounded-lg border focus:outline-none focus:border-blue-500">
     </div>
 
     <div class="overflow-x-auto">
@@ -13,7 +10,7 @@
                 <tr>
                     <th wire:click="sortBy('id')"
                         class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider cursor-pointer">
-                        No
+                        ID
                         @if ($sortField === 'id')
                             <span class="ml-1">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                         @endif
@@ -25,18 +22,15 @@
                             <span class="ml-1">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                         @endif
                     </th>
-                    <th wire:click="sortBy('description')"
+                    <th wire:click="sortBy('events_count')"
                         class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider cursor-pointer">
-                        Deskripsi
-                        @if ($sortField === 'description')
+                        Jumlah Event Aktif
+                        @if ($sortField === 'events_count')
                             <span class="ml-1">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                         @endif
                     </th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
-                        Jumlah Event
-                    </th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
-                        Aksi
+                        Actions
                     </th>
                 </tr>
             </thead>
@@ -45,22 +39,25 @@
                     <tr>
                         <td class="px-6 py-4">{{ $category->id }}</td>
                         <td class="px-6 py-4">{{ $category->name }}</td>
-                        <td class="px-6 py-4">{{ $category->description }}</td>
-                        <td class="px-6 py-4">{{ $category->events_count ?? 0 }}</td>
                         <td class="px-6 py-4">
-                            <div class="flex space-x-2">
-                                <a href="{{ route('admin.categories.edit', $category) }}"
-                                    class="text-indigo-600 hover:text-indigo-900">Edit</a>
-                                <form action="{{ route('admin.categories.destroy', $category) }}" method="POST"
-                                    class="inline">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="text-red-600 hover:text-red-900"
-                                        onclick="return confirm('Apakah Anda yakin ingin menghapus kategori ini?')">
-                                        Hapus
-                                    </button>
-                                </form>
-                            </div>
+                            @php
+                                $activeEventsCount = $category->events()->where('status', 'active')->count();
+                            @endphp
+                            <span
+                                class="px-2 py-1 text-sm rounded-full {{ $activeEventsCount > 0 ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' }}">
+                                {{ $activeEventsCount }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 text-sm">
+                            <a href="{{ route('admin.categories.edit', $category) }}"
+                                class="text-indigo-600 hover:text-indigo-900 mr-3">Edit</a>
+                            <form action="{{ route('admin.categories.destroy', $category) }}" method="POST"
+                                class="inline-block">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="text-red-600 hover:text-red-900"
+                                    onclick="return confirm('Are you sure you want to delete this category?')">Delete</button>
+                            </form>
                         </td>
                     </tr>
                 @endforeach

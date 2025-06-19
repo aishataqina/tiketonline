@@ -18,12 +18,15 @@ class Event extends Model
         'price',
         'quota',
         'remaining_quota',
-        'status'
+        'status',
+        'category_id'
     ];
 
     protected $casts = [
         'event_date' => 'datetime',
-        'price' => 'decimal:2'
+        'price' => 'integer',
+        'quota' => 'integer',
+        'remaining_quota' => 'integer',
     ];
 
     public function tickets()
@@ -36,8 +39,8 @@ class Event extends Model
         return $this->hasMany(Order::class);
     }
 
-    public function categories()
+    public function category()
     {
-        return $this->belongsToMany(Category::class);
+        return $this->belongsTo(Category::class);
     }
 }

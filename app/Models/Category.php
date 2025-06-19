@@ -9,14 +9,22 @@ class Category extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'name',
-        'description'
-    ];
+    protected $fillable = ['name'];
 
     // Relasi many-to-many dengan Event
     public function events()
     {
-        return $this->belongsToMany(Event::class);
+        return $this->hasMany(Event::class);
+    }
+
+    public function activeEvents()
+    {
+        return $this->hasMany(Event::class)->where('status', 'active');
+    }
+
+    // Method untuk menghitung jumlah event aktif
+    public function getActiveEventsCountAttribute()
+    {
+        return $this->activeEvents()->count();
     }
 }

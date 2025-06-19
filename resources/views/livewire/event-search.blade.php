@@ -31,6 +31,9 @@
                             <span class="ml-1">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                         @endif
                     </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
+                        Kategori
+                    </th>
                     <th wire:click="sortBy('event_date')"
                         class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider cursor-pointer">
                         Tanggal & Waktu
@@ -76,6 +79,19 @@
                     <tr>
                         <td class="px-6 py-4">{{ $event->id }}</td>
                         <td class="px-6 py-4">{{ $event->title }}</td>
+                        <td class="px-6 py-4">
+                            @if ($event->category)
+                                <span
+                                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                    {{ $event->category->name }}
+                                </span>
+                            @else
+                                <span
+                                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                    Tidak ada kategori
+                                </span>
+                            @endif
+                        </td>
                         <td class="px-6 py-4 whitespace-nowrap">{{ $event->event_date->format('d M Y H:i') }}</td>
                         <td class="px-6 py-4">{{ $event->location }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">Rp {{ number_format($event->price, 0, ',', '.') }}</td>

@@ -86,6 +86,26 @@
                                         </div>
 
                                         <div class="">
+                                            <div class="flex gap-1 items-center">
+                                                <i class="fa-solid fa-tag me-1" style="color: #a0aaba;"></i>
+                                                <dt class="text-sm font-medium text-gray-700">Kategori:</dt>
+                                            </div>
+                                            <dd class="text-sm text-gray-900">
+                                                @if ($event->category)
+                                                    <span
+                                                        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                                        {{ $event->category->name }}
+                                                    </span>
+                                                @else
+                                                    <span
+                                                        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                                        Tidak ada kategori
+                                                    </span>
+                                                @endif
+                                            </dd>
+                                        </div>
+
+                                        <div class="">
                                             <dt class="text-sm font-medium text-gray-700">Quota:</dt>
                                             <dd class="text-sm text-gray-900">{{ $event->quota }} tickets</dd>
                                         </div>
