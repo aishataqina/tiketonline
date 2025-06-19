@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\TransactionController as AdminTransactionControll
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\TicketController;
+use App\Http\Controllers\Admin\CategoryController;
 use Illuminate\Support\Facades\Route;
 use App\Models\Event;
 
@@ -42,7 +43,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/tickets/{ticket}/download', [TicketController::class, 'downloadPDF'])->name('tickets.download');
 });
 
-// Admin Routes dengan middleware langsung
+// Admin Routes
 Route::middleware(['web', 'auth', \App\Http\Middleware\AdminMiddleware::class])
     ->prefix('admin')
     ->name('admin.')
@@ -51,17 +52,11 @@ Route::middleware(['web', 'auth', \App\Http\Middleware\AdminMiddleware::class])
         Route::resource('events', AdminEventController::class);
         Route::resource('orders', AdminOrderController::class);
         Route::resource('transactions', AdminTransactionController::class);
+        Route::resource('categories', CategoryController::class);
     });
 
 // Midtrans Callback Route - harus di luar middleware auth
 Route::post('/midtrans/callback', [TransactionController::class, 'midtransCallback']);
-
-// Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
-//     Route::get('/dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
-//     Route::resource('events', App\Http\Controllers\Admin\EventController::class);
-//     Route::resource('orders', App\Http\Controllers\Admin\OrderController::class);
-//     Route::resource('transactions', App\Http\Controllers\Admin\TransactionController::class);
-// });
 
 //API Google
 Route::get('/auth/redirect', [CustomerController::class, 'redirect'])->name('auth.redirect');

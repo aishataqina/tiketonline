@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Event;
+use App\Models\Category;
 use Illuminate\Http\Request;
 
 class EventController extends Controller
@@ -10,14 +11,25 @@ class EventController extends Controller
     /**
      * Display a listing of the events.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $events = Event::where('status', 'active')
-            ->where('event_date', '>', now())
-            ->latest()
+        $query = Event::query();
+
+        // Filter berdasarkan kategori
+        if ($request->category) {
+            $query->whereHas('categories', function ($q) use ($request) {
+                $q->where('id', $request->category);
+            });
+        }
+
+        $events = $query->where('status', 'active')
+            ->where('event_date', '>=', now())
+            ->orderBy('event_date')
             ->paginate(10);
 
-        return view('events.index', compact('events'));
+        $categories = Category::all();
+
+        return view('events.index', compact('events', 'categories'));
     }
 
     /**

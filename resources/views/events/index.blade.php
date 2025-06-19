@@ -22,6 +22,9 @@
                     </div>
                 @endif
 
+                <!-- Filter Kategori -->
+                @include('components.category-filter')
+
                 @if ($events->isEmpty())
                     <div class="text-center py-8">
                         <p class="text-gray-700">No upcoming events available.</p>

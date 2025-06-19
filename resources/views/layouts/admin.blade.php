@@ -103,6 +103,11 @@
                     class="sidebar-link {{ request()->routeIs('admin.events.*') ? 'active' : '' }}">
                     <i class="fas fa-calendar-alt me-2"></i> Event
                 </a>
+                <div class="nav-header">Manajemen Kategori</div>
+                <a href="{{ route('admin.categories.index') }}"
+                    class="sidebar-link {{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">
+                    <i class="fas fa-tags me-2"></i> Kategori
+                </a>
                 <div class="nav-header">Transaksi</div>
                 <a href="{{ route('admin.orders.index') }}"
                     class="sidebar-link {{ request()->routeIs('admin.orders.*') ? 'active' : '' }}">
