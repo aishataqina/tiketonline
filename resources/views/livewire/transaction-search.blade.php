@@ -24,10 +24,10 @@
                             <span class="ml-1">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                         @endif
                     </th>
-                    <th wire:click="sortBy('order_id')"
+                    <th wire:click="sortBy('midtrans_order_id')"
                         class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider cursor-pointer">
                         ID Pesanan
-                        @if ($sortField === 'order_id')
+                        @if ($sortField === 'midtrans_order_id')
                             <span class="ml-1">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                         @endif
                     </th>
@@ -65,11 +65,12 @@
                 @foreach ($transactions as $transaction)
                     <tr>
                         <td class="px-6 py-4 whitespace-nowrap">{{ $transaction->transaction_code }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">{{ $transaction->order_id }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">{{ $transaction->midtrans_order_id }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">Rp
                             {{ number_format($transaction->amount, 0, ',', '.') }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            {{ ucfirst(str_replace('_', ' ', $transaction->payment_method)) }}</td>
+                            {{ $transaction->payment_type ? ucwords(str_replace('_', ' ', $transaction->payment_type)) : '-' }}
+                        </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <span
                                 class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 

@@ -46,7 +46,7 @@ class TransactionSearch extends Component
                 ->when($this->search, function ($query) {
                     $query->where(function ($query) {
                         $query->where('transaction_code', 'like', '%' . $this->search . '%')
-                            ->orWhere('order_id', 'like', '%' . $this->search . '%');
+                            ->orWhere('midtrans_order_id', 'like', '%' . $this->search . '%');
                     });
                 })
                 ->when($this->status, function ($query) {

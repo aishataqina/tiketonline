@@ -27,7 +27,7 @@ class TransactionController extends Controller
 
         $order = Order::findOrFail($request->order_id);
 
-        if ($order->user_id !== auth()->id()) {
+        if ($order->user_id !== Auth::id()) {
             abort(403);
         }
 
@@ -181,6 +181,7 @@ class TransactionController extends Controller
 
             $transaction->status = 'success';
             $transaction->paid_at = now();
+            $transaction->payment_type = $notif->payment_type;
             $transaction->save();
         } elseif ($notif->transaction_status == 'pending') {
             $transaction->status = 'pending';
@@ -237,33 +238,31 @@ class TransactionController extends Controller
         $transaction = Transaction::findOrFail($id);
 
         try {
-            // Log awal pengecekan
-            \Log::info('Mulai cek pembayaran:', [
+            Log::info('Mulai cek pembayaran:', [
                 'transaction_id' => $transaction->id,
                 'current_status' => $transaction->status,
                 'midtrans_order_id' => $transaction->midtrans_order_id
             ]);
 
-            // Cek status ke Midtrans
-            \Midtrans\Config::$serverKey = config('midtrans.server_key');
-            \Midtrans\Config::$isProduction = config('midtrans.is_production');
-            \Midtrans\Config::$isSanitized = true;
-            \Midtrans\Config::$is3ds = true;
+            Config::$serverKey = config('midtrans.server_key');
+            Config::$isProduction = config('midtrans.is_production');
+            Config::$isSanitized = true;
+            Config::$is3ds = true;
 
             if (!$transaction->midtrans_order_id) {
                 throw new \Exception('Order ID Midtrans tidak ditemukan');
             }
 
-            \Log::info('Cek status Midtrans:', ['order_id' => $transaction->midtrans_order_id]);
+            Log::info('Cek status Midtrans:', ['order_id' => $transaction->midtrans_order_id]);
 
+            /** @var object $status */
             $status = \Midtrans\Transaction::status($transaction->midtrans_order_id);
-            \Log::info('Status dari Midtrans:', ['status' => $status]);
+            Log::info('Status dari Midtrans:', ['status' => $status]);
 
             if ($status->transaction_status == 'settlement' || $status->transaction_status == 'capture') {
                 if ($transaction->status !== 'success') {
-                    \Log::info('Pembayaran berhasil, memproses order');
+                    Log::info('Pembayaran berhasil, memproses order');
 
-                    // Buat order baru dari transaksi jika belum ada
                     $existingOrder = Order::where('user_id', $transaction->user_id)
                         ->where('event_id', $transaction->event_id)
                         ->where('quantity', $transaction->quantity)
@@ -280,7 +279,6 @@ class TransactionController extends Controller
                             'status' => 'paid',
                         ]);
 
-                        // Update sisa kuota event
                         $event = Event::find($transaction->event_id);
                         if ($event) {
                             $event->decrement('remaining_quota', $transaction->quantity);
@@ -289,7 +287,6 @@ class TransactionController extends Controller
                             }
                         }
 
-                        // Generate tiket sesuai quantity
                         for ($i = 0; $i < $transaction->quantity; $i++) {
                             Ticket::create([
                                 'order_id' => $order->id,
@@ -303,9 +300,10 @@ class TransactionController extends Controller
 
                     $transaction->status = 'success';
                     $transaction->paid_at = now();
+                    $transaction->payment_type = $status->payment_type ?? null;
                     $transaction->save();
 
-                    \Log::info('Pembayaran berhasil diproses:', [
+                    Log::info('Pembayaran berhasil diproses:', [
                         'transaction_id' => $transaction->id,
                         'new_status' => $transaction->status
                     ]);
@@ -314,17 +312,17 @@ class TransactionController extends Controller
                 }
             }
 
-            \Log::warning('Pembayaran belum selesai:', [
+            Log::warning('Pembayaran belum selesai:', [
                 'transaction_id' => $transaction->id,
-                'midtrans_status' => $status->transaction_status
+                'midtrans_status' => $status->transaction_status ?? 'unknown'
             ]);
 
             return response()->json([
                 'success' => false,
-                'message' => 'Status pembayaran: ' . ucfirst($status->transaction_status)
+                'message' => 'Status pembayaran: ' . ucfirst($status->transaction_status ?? 'unknown')
             ]);
         } catch (\Exception $e) {
-            \Log::error('Error saat konfirmasi pembayaran:', [
+            Log::error('Error saat konfirmasi pembayaran:', [
                 'transaction_id' => $transaction->id,
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()

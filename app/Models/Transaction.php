@@ -15,6 +15,7 @@ class Transaction extends Model
         'quantity',
         'amount',
         'payment_method',
+        'payment_type',
         'status',
         'snap_token',
         'paid_at'
