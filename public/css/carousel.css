@@ -1,0 +1,40 @@
+/* Style khusus untuk carousel */
+#tiketCarousel {
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+    position: relative;
+}
+
+#tiketCarousel .text-shadow {
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+#tiketCarousel .carousel-caption {
+    background: rgba(0, 0, 0, 0.4);
+    padding: 20px;
+    border-radius: 10px;
+}
+
+#tiketCarousel .carousel-item img {
+    height: 400px;
+    object-fit: cover;
+}
+
+#tiketCarousel .carousel-caption h2 {
+    font-size: 1.5rem;
+    line-height: 2rem;
+    color: white;
+}
+
+#tiketCarousel .carousel-caption p {
+    color: white;
+}
+
+#tiketCarousel .rounded-lg {
+    border-radius: 0.5rem;
+}
+
+#tiketCarousel .mb-8 {
+    margin-bottom: 2rem;
+} 
