@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\EventController as AdminEventController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\TransactionController as AdminTransactionController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\TicketController;
 use Illuminate\Support\Facades\Route;
 use App\Models\Event;
@@ -61,5 +62,11 @@ Route::post('/midtrans/callback', [TransactionController::class, 'midtransCallba
 //     Route::resource('orders', App\Http\Controllers\Admin\OrderController::class);
 //     Route::resource('transactions', App\Http\Controllers\Admin\TransactionController::class);
 // });
+
+//API Google
+Route::get('/auth/redirect', [CustomerController::class, 'redirect'])->name('auth.redirect');
+Route::get('/auth/google/callback', [CustomerController::class, 'callback'])->name('auth.callback');
+// Logout
+Route::post('/logout', [CustomerController::class, 'logout'])->name('logout');
 
 require __DIR__ . '/auth.php';
