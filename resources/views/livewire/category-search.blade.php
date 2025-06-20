@@ -22,6 +22,13 @@
                             <span class="ml-1">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                         @endif
                     </th>
+                    <th wire:click="sortBy('description')"
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider cursor-pointer">
+                        Deskripsi
+                        @if ($sortField === 'description')
+                            <span class="ml-1">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                        @endif
+                    </th>
                     <th wire:click="sortBy('events_count')"
                         class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider cursor-pointer">
                         Jumlah Event Aktif
@@ -39,6 +46,7 @@
                     <tr>
                         <td class="px-6 py-4">{{ $category->id }}</td>
                         <td class="px-6 py-4">{{ $category->name }}</td>
+                        <td class="px-6 py-4">{{ $category->description }}</td>
                         <td class="px-6 py-4">
                             @php
                                 $activeEventsCount = $category->events()->where('status', 'active')->count();

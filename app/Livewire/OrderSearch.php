@@ -43,6 +43,9 @@ class OrderSearch extends Component
             'orders' => Order::query()
                 ->with(['user', 'event'])
                 ->when($this->search, function ($query) {
+                    $query->where('order_code', 'like', '%' . $this->search . '%');
+                })
+                ->when($this->search, function ($query) {
                     $query->where(function ($query) {
                         $query->whereHas('user', function ($query) {
                             $query->where('name', 'like', '%' . $this->search . '%')
@@ -51,7 +54,8 @@ class OrderSearch extends Component
                             ->orWhereHas('event', function ($query) {
                                 $query->where('title', 'like', '%' . $this->search . '%');
                             })
-                            ->orWhere('id', 'like', '%' . $this->search . '%');
+                            ->orWhere('id', 'like', '%' . $this->search . '%')
+                            ->orWhere('order_code', 'like', '%' . $this->search . '%');
                     });
                 })
                 ->when($this->status, function ($query) {
