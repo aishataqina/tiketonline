@@ -122,6 +122,12 @@ class EventController extends Controller
      */
     public function destroy(Event $event)
     {
+        // Cek apakah event memiliki pesanan
+        if ($event->orders()->exists()) {
+            return redirect()->route('admin.events.index')
+                ->with('error', 'Event tidak dapat dihapus karena masih memiliki pesanan aktif.');
+        }
+
         if ($event->image) {
             Storage::disk('public')->delete($event->image);
         }
