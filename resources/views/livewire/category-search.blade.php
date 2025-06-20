@@ -55,8 +55,10 @@
                                 class="inline-block">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="text-red-600 hover:text-red-900"
-                                    onclick="return confirm('Are you sure you want to delete this category?')">Delete</button>
+                                <button type="button" class="text-red-600 hover:text-red-900"
+                                    onclick="confirmDelete(event, 'Apakah Anda yakin ingin menghapus kategori ini? Kategori yang sudah dihapus tidak dapat dikembalikan.')">
+                                    Hapus
+                                </button>
                             </form>
                         </td>
                     </tr>

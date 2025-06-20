@@ -115,8 +115,10 @@
                             <form action="{{ route('admin.events.destroy', $event) }}" method="POST" class="inline">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="text-red-600 hover:text-red-900"
-                                    onclick="return confirm('Are you sure?')">Hapus</button>
+                                <button type="button" class="text-red-600 hover:text-red-900"
+                                    onclick="confirmDelete(event, 'Apakah Anda yakin ingin menghapus event ini? Event yang sudah dihapus tidak dapat dikembalikan.')">
+                                    Hapus
+                                </button>
                             </form>
                         </td>
                     </tr>
