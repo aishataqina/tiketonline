@@ -50,6 +50,11 @@ class EventController extends Controller
         if ($validatedData['quota'] <= 0) {
             $validatedData['status'] = 'sold_out';
         }
+        if ($validatedData['event_date'] < now()) {
+            return redirect()->back()
+                ->withInput()
+                ->withErrors(['event_date' => 'Tanggal event tidak boleh kurang dari hari ini']);
+        }
 
         Event::create([
             'title' => $validatedData['title'],
