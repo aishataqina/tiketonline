@@ -42,14 +42,13 @@
                     <!-- Logo -->
                     <div class="shrink-0 flex items-center">
                         <a href="/" class="flex items-center text-gray-700 font-extrabold text-xl">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
-                                class="bi bi-ticket-perforated text-blue-600" viewBox="0 0 16 16">
-                                <path
-                                    d="M0 4.5A1.5 1.5 0 0 1 1.5 3H14.5A1.5 1.5 0 0 1 16 4.5c0 .563-.186 1.07-.5 1.5.314.43.5.937.5 1.5s-.186 1.07-.5 1.5c.314.43.5.937.5 1.5A1.5 1.5 0 0 1 14.5 13H1.5A1.5 1.5 0 0 1 0 11.5c0-.563.186-1.07.5-1.5A2.5 2.5 0 0 1 0 8c0-.563.186-1.07.5-1.5A2.5 2.5 0 0 1 0 4.5zm1.5-.5A.5.5 0 0 0 1 4.5c0 .276.112.526.293.707A.5.5 0 0 1 1.5 6a.5.5 0 0 1-.207.793A.5.5 0 0 0 1 7.5c0 .276.112.526.293.707A.5.5 0 0 1 1.5 9a.5.5 0 0 1-.207.793A.5.5 0 0 0 1 10.5a.5.5 0 0 0 .5.5h13a.5.5 0 0 0 .5-.5c0-.276-.112-.526-.293-.707A.5.5 0 0 1 14.5 10a.5.5 0 0 1 .207-.793A.5.5 0 0 0 15 8.5a.5.5 0 0 0-.5-.5h-13a.5.5 0 0 0-.5.5c0 .276.112.526.293.707A.5.5 0 0 1 1.5 10a.5.5 0 0 1-.207.793A.5.5 0 0 0 1 11.5a.5.5 0 0 0 .5.5h13a.5.5 0 0 0 .5-.5c0-.276-.112-.526-.293-.707A.5.5 0 0 1 14.5 12a.5.5 0 0 1 .207-.793A.5.5 0 0 0 15 10.5a.5.5 0 0 0-.5-.5h-13a.5.5 0 0 0-.5.5z" />
-                            </svg>
-                            <span class="ml-2">JelajahEvent</span>
+                            <div class="flex items-center">
+                                <i class="fa-solid fa-ticket text-blue-600" style="font-size: 1.2rem;"></i>
+                                <span class="ml-2 text-xl font-extrabold">JelajahEvent</span>
+                            </div>
                         </a>
                     </div>
+
 
                     <!-- Navigation Links -->
                     <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">

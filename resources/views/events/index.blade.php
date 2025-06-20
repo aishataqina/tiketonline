@@ -6,7 +6,7 @@
             @include('components.carousel')
 
 
-            <div class="p-6 text-gray-900">
+            <div class="px-6 text-gray-900">
                 <h2 class="text-2xl font-semibold mb-6">Event & Tiket Tersedia</h2>
 
                 @if (session('success'))

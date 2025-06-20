@@ -1,4 +1,4 @@
-<x-guest-layout>
+<x-login-layout>
     <!-- Session Status -->
     <x-auth-session-status class="mb-4" :status="session('status')" />
 
@@ -16,6 +16,11 @@
 
     <form method="POST" action="{{ route('login') }}">
         @csrf
+
+        <div class="flex items-center justify-center mb-5">
+            <i class="fa-solid fa-ticket text-blue-600" style="font-size: 1.5rem;"></i>
+            <span class="ml-2 text-2xl font-extrabold">JelajahEvent</span>
+        </div>
 
         <!-- Email Address -->
         <div>
@@ -36,22 +41,22 @@
         </div>
 
         <!-- Remember Me -->
-        <div class="block mt-4">
+        <div class="flex items-center justify-between mt-4">
             <label for="remember_me" class="inline-flex items-center">
                 <input id="remember_me" type="checkbox"
                     class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" name="remember">
                 <span class="ms-2 text-sm text-gray-700">{{ __('Remember me') }}</span>
             </label>
-        </div>
-
-        <div class="flex items-center justify-end mt-4">
             @if (Route::has('password.request'))
                 <a class="underline text-sm text-gray-700 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                     href="{{ route('password.request') }}">
                     {{ __('Forgot your password?') }}
                 </a>
             @endif
-            <x-primary-button class="ms-3">
+        </div>
+
+        <div class="w-full mt-4">
+            <x-primary-button class="w-full justify-center">
                 {{ __('Log in') }}
             </x-primary-button>
         </div>
@@ -88,4 +93,4 @@
             </a>
         </div>
     </div>
-</x-guest-layout>
+</x-login-layout>
