@@ -57,6 +57,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Get the transactions for the user.
+     */
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class);
+    }
+
+    /**
      * Get the tickets for the user.
      */
     public function tickets()

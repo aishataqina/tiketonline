@@ -39,6 +39,11 @@ class Event extends Model
         return $this->hasMany(Order::class);
     }
 
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class);
+    }
+
     public function category()
     {
         return $this->belongsTo(Category::class);

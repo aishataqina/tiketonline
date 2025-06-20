@@ -119,13 +119,18 @@
                     class="sidebar-link {{ request()->routeIs('admin.transactions.*') ? 'active' : '' }}">
                     <i class="fas fa-credit-card me-2"></i> Transaksi
                 </a>
+                <div class="nav-header">Laporan</div>
+                <a href="{{ route('admin.reports.index') }}"
+                    class="sidebar-link {{ request()->routeIs('admin.reports.*') ? 'active' : '' }}">
+                    <i class="fas fa-file-alt me-2"></i> Laporan
+                </a>
                 <div class="nav-header">Pengaturan</div>
-                <a href="#" class="sidebar-link">
-                    <i class="fas fa-users me-2"></i> Pengguna
+                <a href="{{ route('admin.users.index') }}"
+                    class="sidebar-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
+                    <i class="fas fa-users"></i>
+                    <span>Users</span>
                 </a>
-                <a href="#" class="sidebar-link">
-                    <i class="fas fa-cog me-2"></i> Sistem
-                </a>
+
             </div>
         </div>
 

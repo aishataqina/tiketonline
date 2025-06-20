@@ -11,6 +11,9 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\ReportController;
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\UserController;
 use Illuminate\Support\Facades\Route;
 use App\Models\Event;
 
@@ -53,6 +56,15 @@ Route::middleware(['web', 'auth', \App\Http\Middleware\AdminMiddleware::class])
         Route::resource('orders', AdminOrderController::class);
         Route::resource('transactions', AdminTransactionController::class);
         Route::resource('categories', CategoryController::class);
+        Route::resource('users', UserController::class);
+
+        // Reports Routes
+        Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+        Route::post('/reports/generate', [ReportController::class, 'generate'])->name('reports.generate');
+        Route::get('/reports/sales', [ReportController::class, 'generateSalesReport'])->name('reports.sales');
+        Route::get('/reports/finance', [ReportController::class, 'generateFinanceReport'])->name('reports.finance');
+        Route::get('/reports/events', [ReportController::class, 'generateEventsReport'])->name('reports.events');
+        Route::get('/reports/customers', [ReportController::class, 'generateCustomersReport'])->name('reports.customers');
     });
 
 // Midtrans Callback Route - harus di luar middleware auth
