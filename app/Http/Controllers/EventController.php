@@ -20,13 +20,21 @@ class EventController extends Controller
             $query->where('category_id', $request->category);
         }
 
-        $events = $query->where('status', 'active')
+        // Tampilkan semua event yang aktif dan belum lewat tanggalnya
+        // Termasuk yang sudah habis kuotanya
+        $events = $query->where(function ($q) {
+            $q->where('status', 'active')
+                ->orWhere('status', 'sold_out');
+        })
             ->where('event_date', '>=', now())
             ->orderBy('event_date')
             ->paginate(12);
 
         $categories = Category::withCount(['events' => function ($query) {
-            $query->where('status', 'active')
+            $query->where(function ($q) {
+                $q->where('status', 'active')
+                    ->orWhere('status', 'sold_out');
+            })
                 ->where('event_date', '>=', now());
         }])->get();
 

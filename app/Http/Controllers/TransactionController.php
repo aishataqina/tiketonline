@@ -201,8 +201,18 @@ class TransactionController extends Controller
             'quantity' => 'required|integer|min:1',
         ]);
 
-        $event = \App\Models\Event::findOrFail($request->event_id);
+        $event = Event::findOrFail($request->event_id);
         $user = Auth::user();
+
+        // Cek apakah event masih memiliki kuota
+        if ($event->remaining_quota <= 0 || $event->status === 'sold_out') {
+            return redirect()->back()->with('error', 'Maaf, tiket untuk event ini sudah habis.');
+        }
+
+        // Cek apakah jumlah pembelian tidak melebihi sisa kuota
+        if ($event->remaining_quota < $request->quantity) {
+            return redirect()->back()->with('error', 'Jumlah tiket yang diminta melebihi sisa kuota yang tersedia.');
+        }
 
         // Cek apakah user memiliki transaksi pending untuk event ini
         $pendingTransaction = Transaction::where('user_id', $user->id)
@@ -211,12 +221,7 @@ class TransactionController extends Controller
             ->first();
 
         if ($pendingTransaction) {
-            return redirect()->back()->with('error', 'Anda masih memiliki transaksi yang belum dibayar untuk event ini. Silakan selesaikan pembayaran terlebih dahulu.');
-        }
-
-        // Cek kuota
-        if ($event->remaining_quota < $request->quantity) {
-            return redirect()->back()->with('error', 'Sisa kuota tidak mencukupi.');
+            return redirect()->back()->with('error', 'Anda masih memiliki transaksi yang belum dibayar untuk event ini.');
         }
 
         $transaction = Transaction::create([
@@ -227,7 +232,8 @@ class TransactionController extends Controller
             'status' => 'pending',
         ]);
 
-        return redirect()->route('transactions.pay', $transaction)->with('success', 'Transaksi berhasil dibuat, silakan lakukan pembayaran.');
+        return redirect()->route('transactions.pay', $transaction)
+            ->with('success', 'Transaksi berhasil dibuat, silakan lakukan pembayaran.');
     }
 
     /**
@@ -327,6 +333,16 @@ class TransactionController extends Controller
                 'success' => false,
                 'message' => 'Terjadi kesalahan saat mengecek status pembayaran: ' . $e->getMessage()
             ]);
+        }
+    }
+
+    protected function updateEventQuota($event, $quantity)
+    {
+        $event->decrement('remaining_quota', $quantity);
+
+        // Update status menjadi sold_out jika kuota habis
+        if ($event->remaining_quota <= 0) {
+            $event->update(['status' => 'sold_out']);
         }
     }
 }

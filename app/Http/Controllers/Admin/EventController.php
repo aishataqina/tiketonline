@@ -40,11 +40,16 @@ class EventController extends Controller
             'location' => 'required|string|max:255',
             'price' => 'required|numeric|min:0',
             'quota' => 'required|integer|min:1',
-            'status' => 'required|in:active,inactive',
+            'status' => 'required|in:active,inactive,sold_out',
             'category_id' => 'required|exists:categories,id'
         ]);
 
         $imagePath = $request->file('image')->store('img-events', 'public');
+
+        // Set status sold_out jika quota 0
+        if ($validatedData['quota'] <= 0) {
+            $validatedData['status'] = 'sold_out';
+        }
 
         Event::create([
             'title' => $validatedData['title'],
@@ -91,7 +96,7 @@ class EventController extends Controller
             'event_date' => 'required|date',
             'location' => 'required|string|max:255',
             'price' => 'required|numeric|min:0',
-            'quota' => 'required|integer|min:1',
+            'quota' => 'required|integer|min:0',
             'status' => 'required|in:active,inactive,sold_out',
             'category_id' => 'required|exists:categories,id'
         ]);
@@ -107,7 +112,22 @@ class EventController extends Controller
             'category_id' => $validatedData['category_id']
         ];
 
+        // Update remaining_quota jika quota berubah
+        if ($event->quota !== $validatedData['quota']) {
+            $quotaDiff = $validatedData['quota'] - $event->quota;
+            $updateData['remaining_quota'] = $event->remaining_quota + $quotaDiff;
+        }
+
+        // Set status sold_out jika remaining_quota 0
+        if ($updateData['remaining_quota'] <= 0) {
+            $updateData['status'] = 'sold_out';
+        }
+
         if ($request->hasFile('image')) {
+            // Hapus gambar lama jika ada
+            if ($event->image) {
+                Storage::disk('public')->delete($event->image);
+            }
             $imagePath = $request->file('image')->store('img-events', 'public');
             $updateData['image'] = $imagePath;
         }
