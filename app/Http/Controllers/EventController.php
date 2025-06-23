@@ -26,7 +26,6 @@ class EventController extends Controller
             $q->where('status', 'active')
                 ->orWhere('status', 'sold_out');
         })
-            ->where('event_date', '>=', now())
             ->orderBy('event_date')
             ->paginate(12);
 
@@ -34,8 +33,7 @@ class EventController extends Controller
             $query->where(function ($q) {
                 $q->where('status', 'active')
                     ->orWhere('status', 'sold_out');
-            })
-                ->where('event_date', '>=', now());
+            });
         }])->get();
 
         return view('events.index', compact('events', 'categories'));

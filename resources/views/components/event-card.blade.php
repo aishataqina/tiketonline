@@ -4,6 +4,11 @@
             <span class="text-white text-2xl font-bold px-6 py-2 rounded-lg">HABIS</span>
         </div>
     @endif
+    @if ($event->event_date < now())
+        <div class="absolute inset-0 bg-gray-800/60 flex items-center justify-center z-10">
+            <span class="text-white text-2xl font-bold px-6 py-2 rounded-lg">SELESAI</span>
+        </div>
+    @endif
     @if ($event->image)
         <img src="{{ asset('storage/' . $event->image) }}" alt="{{ $event->title }}" class="w-full h-48 object-cover">
     @endif
